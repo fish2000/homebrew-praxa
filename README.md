@@ -1,2 +1,2 @@
-# brew
-Homebrew Formulae For Praxa – Abandon Home All Ye Who Tap
+# fish2000/brew
+Homebrew Formulae For Praxa – Abandon Hope All Ye Who Tap
