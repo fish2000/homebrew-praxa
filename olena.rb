@@ -17,6 +17,7 @@ class Olena < Formula
   option "with-scribo", "Enable Scribo Support (Whatever The F That Is)"
   
   depends_on 'libtiff' => :recommended
+  depends_on 'poppler' => :recommended
   depends_on 'tesseract' => :recommended
   depends_on 'graphicsmagick'
   depends_on 'libxslt'
@@ -28,7 +29,6 @@ class Olena < Formula
     ENV['CPPFLAGS'] = "-I/usr/local/include/GraphicsMagick"
     ENV['CPPFLAGS'] += " -DHAVE_SYS_TYPES_H=1"
     ENV['CXXFLAGS'] = "-fno-strict-aliasing"
-    #ENV['LDFLAGS'] = "-L /some/additional/shit"
     
     cargs = [
       "QT_PATH=/usr/local", "QMAKE=/usr/local/bin/qmake",
