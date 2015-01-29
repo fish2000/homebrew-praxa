@@ -28,7 +28,7 @@ class Olena < Formula
   end
 
   depends_on 'swig' => :recommended
-  depends_on :python => if not build.without? "swig"
+  depends_on :python if not build.without? "swig"
   
   depends_on 'libtiff' => :recommended
   depends_on 'poppler' => :recommended
