@@ -14,24 +14,21 @@ class Olena < Formula
   sha1 '54f756b033a45d4c2fe1233c10fc43f99f9f552f'
   
   option :cxx11
-  #option "without-tesseract", "Disable Tesseract OCR Support"
-  #option "without-libtiff", "Disable TIFF Image Format Support"
   option "with-scribo", "Enable Scribo Support (Whatever The F That Is)"
   
-  depends_on 'libxslt'
   depends_on 'libtiff' => :recommended
   depends_on 'tesseract' => :recommended
-  
   depends_on 'graphicsmagick'
+  depends_on 'libxslt'
   depends_on 'fop'
   depends_on 'qt'
 
   def install
     ENV.cxx11 if build.cxx11?
-    ENV.append_to_cppflags "-I/usr/local/include/GraphicsMagick"
-    ENV.append_to_cppflags "-DHAVE_SYS_TYPES_H=1"
-    ENV.append_to_cxxflags "-fno-strict-aliasing"
-    #ENV.append_to_ldflags "-L /some/shit"
+    ENV.cppflags << "-I/usr/local/include/GraphicsMagick"
+    ENV.cppflags << "-DHAVE_SYS_TYPES_H=1"
+    ENV.cxxflags << "-fno-strict-aliasing"
+    #ENV.ldflags << "-L /some/shit"
     
     cargs = [
       "QT_PATH=/usr/local", "QMAKE=/usr/local/bin/qmake",
