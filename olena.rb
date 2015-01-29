@@ -45,5 +45,6 @@ class Olena < Formula
     system "./configure", "--prefix=#{prefix}", *cargs
     system "make" 
     system "make install"
+    (share/"doc/olena/milena/user-refman").rm_rf
   end
 end
