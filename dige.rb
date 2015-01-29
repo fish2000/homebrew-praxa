@@ -7,6 +7,8 @@ class Dige < Formula
   depends_on "boost"
   depends_on "ffmpeg"
   depends_on "qt"
+  
+  depends_on "olena" => :optional
 
   def install
     system "cmake", ".", *std_cmake_args
