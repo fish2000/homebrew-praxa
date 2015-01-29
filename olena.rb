@@ -14,13 +14,13 @@ class Olena < Formula
   sha1 '54f756b033a45d4c2fe1233c10fc43f99f9f552f'
   
   option :cxx11
-  option "without-tesseract", "Disable Tesseract OCR Support"
-  option "without-tiff", "Disable TIFF Image Format Support"
+  #option "without-tesseract", "Disable Tesseract OCR Support"
+  #option "without-libtiff", "Disable TIFF Image Format Support"
   option "with-scribo", "Enable Scribo Support (Whatever The F That Is)"
   
   depends_on 'libxslt'
-  depends_on 'libtiff' => :optional
-  depends_on 'tesseract' => :optional
+  depends_on 'libtiff' => :recommended
+  depends_on 'tesseract' => :recommended
   
   depends_on 'graphicsmagick'
   depends_on 'fop'
@@ -41,7 +41,7 @@ class Olena < Formula
       "--with-graphicsmagickxx=#{Formula['graphicsmagick'].opt_prefix}",
       "--with-imagemagickxx=no"]
     
-    cargs << "--with-tiff=#{Formula['libtiff'].opt_prefix}" if not build.without? "tiff"
+    cargs << "--with-tiff=#{Formula['libtiff'].opt_prefix}" if not build.without? "libtiff"
     cargs << "--with-tesseract=#{Formula['tesseract'].opt_prefix}" if not build.without? "tesseract"
     cargs << "--enable-scribo" if build.with? "scribo"
     
