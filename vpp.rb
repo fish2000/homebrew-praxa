@@ -4,8 +4,8 @@ class Vpp < Formula
   head "https://github.com/matt-42/vpp.git", :using => :git
 
   depends_on "cmake" => :build
-  depends_on "fish2000/brew/iod"
-  depends_on "fish2000/brew/dige"
+  depends_on "fish2000/praxa/iod"
+  depends_on "fish2000/praxa/dige"
   depends_on "opencv"
   depends_on "eigen"
 
