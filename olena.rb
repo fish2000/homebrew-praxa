@@ -25,10 +25,10 @@ class Olena < Formula
 
   def install
     ENV.cxx11 if build.cxx11?
-    ENV.cppflags << "-I/usr/local/include/GraphicsMagick"
-    ENV.cppflags << "-DHAVE_SYS_TYPES_H=1"
-    ENV.cxxflags << "-fno-strict-aliasing"
-    #ENV.ldflags << "-L /some/shit"
+    ENV['CPPFLAGS'] << " -I/usr/local/include/GraphicsMagick"
+    ENV['CPPFLAGS'] << " -DHAVE_SYS_TYPES_H=1"
+    ENV['CXXFLAGS'] << " -fno-strict-aliasing"
+    #ENV['LDFLAGS'] << " -L /some/additional/shit"
     
     cargs = [
       "QT_PATH=/usr/local", "QMAKE=/usr/local/bin/qmake",
