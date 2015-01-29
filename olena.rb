@@ -73,6 +73,15 @@ class Olena < Formula
       # QT-backed Scribo UI
       cargs << "--enable-scribo" if build.with? "scribo"
       
+      # Heads are wise to strap first, always
+      if build.head?
+        if build.with? "head-docs"
+          system "./bootstrap"
+        else
+          system "./bootstrap", "--regen"
+        end
+      end
+      
       # configure/make/install
       system "./configure", "--prefix=#{prefix}", *cargs
       system "make"
