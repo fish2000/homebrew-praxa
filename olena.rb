@@ -90,8 +90,8 @@ class Olena < Formula
       # clean up logorrhea-inducing artifacts
       (share/"doc/olena/milena/user-refman").rm_rf
       
-    end # python enumeration thing
+    end
     
-  end # install block is over
+  end
   
-end # formula is over
+end
