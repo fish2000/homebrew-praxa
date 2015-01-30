@@ -13,9 +13,9 @@ class Olena < Formula
   version "2.1.0"
   sha1 '54f756b033a45d4c2fe1233c10fc43f99f9f552f'
   
-  option :cxx11
-  option "with-scribo", "Enable Scribo Support (Whatever The F That Is)"
-  option "with-head-docs", "Try to make all the docs during a HEAD source-build"
+  option "without-scribo", "Omit building the Scribo header library"
+  option "without-cxx11", "Don't enable any standard C++11 build flags"
+  option "with-head-docs", "Attempt to make all the docs when building from HEAD"
 
   head do
     url 'https://github.com/glazzara/olena.git'
@@ -30,8 +30,9 @@ class Olena < Formula
   depends_on 'swig' => :recommended
   depends_on :python if not build.without? "swig"
   
+  depends_on 'fftw' => :optional
+  depends_on 'poppler' => :optional
   depends_on 'libtiff' => :recommended
-  depends_on 'poppler' => :recommended
   depends_on 'tesseract' => :recommended
   depends_on 'graphicsmagick'
   depends_on 'libxslt'
@@ -39,58 +40,56 @@ class Olena < Formula
   depends_on 'qt'
 
   def install
-    ENV.cxx11 if build.cxx11?
+    ENV.cxx11 if not build.without? "cxx11"
     ENV['CPPFLAGS'] = "-I#{Formula['graphicsmagick'].opt_prefix}/include/GraphicsMagick"
     ENV['CPPFLAGS'] += " -DHAVE_SYS_TYPES_H=1"
     ENV['CXXFLAGS'] = "-fno-strict-aliasing"
     
-    # Hula hoop through which a brewer must jump to deal with python(s)
-    Language::Python.each_python(build) do |python, version|
+    # Baseline arguments to .configure
+    cargs = [
+      "QT_PATH=#{Formula['qt'].opt_prefix}",
       
-      # Baseline arguments to .configure
-      cargs = [
-        "QT_PATH=#{Formula['qt'].opt_prefix}",
-        
-        "MOC=#{Formula['qt'].opt_prefix}/bin/moc", 
-        "UIC=#{Formula['qt'].opt_prefix}/bin/uic",
-        "RCC=#{Formula['qt'].opt_prefix}/bin/rcc",
-        "QMAKE=#{Formula['qt'].opt_prefix}/bin/qmake",
-        
-        "--with-graphicsmagickxx=#{Formula['graphicsmagick'].opt_prefix}",
-        "--with-imagemagickxx=no"]
+      "MOC=#{Formula['qt'].opt_prefix}/bin/moc", 
+      "UIC=#{Formula['qt'].opt_prefix}/bin/uic",
+      "RCC=#{Formula['qt'].opt_prefix}/bin/rcc",
+      "QMAKE=#{Formula['qt'].opt_prefix}/bin/qmake",
       
-      # Third-party imaging libraries
-      cargs << "--with-tiff=#{Formula['libtiff'].opt_prefix}" if not build.without? "libtiff"
-      cargs << "--with-tesseract=#{Formula['tesseract'].opt_prefix}" if not build.without? "tesseract"
-      
-      # Swig-generated Python bindings
-      if not build.without? "swig"
-        cargs << "--with-swig=#{Formula['swig'].opt_prefix}"
-        cargs << "--enable-swilena"
-        cargs << "PYTHON="+python
-      end
-      
-      # QT-backed Scribo UI
-      cargs << "--enable-scribo" if build.with? "scribo"
-      
-      # Heads are wise to strap first, always
-      if build.head?
-        if build.with? "head-docs"
-          system "./bootstrap"
-        else
-          system "./bootstrap", "--regen"
-        end
-      end
-      
-      # configure/make/install
-      system "./configure", "--prefix=#{prefix}", *cargs
-      system "make"
-      system "make install"
-      
-      # clean up logorrhea-inducing artifacts
-      (share/"doc/olena/milena/user-refman").rm_rf
-      
+      "--with-graphicsmagickxx=#{Formula['graphicsmagick'].opt_prefix}",
+      "--with-imagemagickxx=no"]
+    
+    # Third-party imaging libraries
+    if not build.without? "libtiff"
+      cargs << "--with-tiff=#{Formula['libtiff'].opt_prefix}"
     end
+    if not build.without? "tesseract"
+      cargs << "--with-tesseract=#{Formula['tesseract'].opt_prefix}"
+    end
+    
+    # Swig-generated Python bindings
+    if not build.without? "swig"
+      cargs << "--enable-swilena"
+      cargs << "PYTHON=#{`which python`}"
+    end
+    
+    # QT-backed Scribo UI
+    cargs << "--enable-scribo" if not build.without? "scribo"
+    
+    # Heads are wise to strap first, always
+    if build.head?
+      if build.with? "head-docs"
+        system "./bootstrap"
+      else
+        system "./bootstrap", "--regen"
+      end
+    end
+    
+    # configure/make/install
+    system "./configure", "--prefix=#{prefix}", *cargs
+    system "make"
+    system "make install"
+    
+    # clean up logorrhea-inducing artifacts
+    rm_rf share/"doc/olena/milena/user-refman"
     
   end
   
