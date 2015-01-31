@@ -28,6 +28,8 @@ class Dige < Formula
     end
     
     # examples: cmakify all the things, recursively
+    # N.B. Only 'hello world seems to work; I do not
+    # currently recommend this
     if build.with? "examples"
       # customize cmake args
       ex_cmake_args = [
@@ -37,14 +39,13 @@ class Dige < Formula
         "-DCMAKE_VERBOSE_MAKEFILE=#{ARGV.verbose? and "ON" or "OFF"}",
         "-Wno-dev"]
       
-      # patch 'em
-      inreplace "examples/random/main.cc" do |s|
-        s.gsub! "<dige/event/wait.h>", "<dige/event/all.h>"
-        s.gsub! "dg::key_release", "dg::event::key_release"
-        s.gsub! "dg::display", "dg::event::display"
-        s.gsub! "dg::click", "dg::event::click"
-      end
-      
+      # patch example source
+      # inreplace "examples/random/main.cc" do |s|
+      #   s.gsub! "<dige/event/wait.h>", "<dige/event/all.h>"
+      #   s.gsub! "dg::key_release", "dg::event::key_release"
+      #   s.gsub! "dg::display", "dg::event::display"
+      #   s.gsub! "dg::click", "dg::event::click"
+      # end
       
       cd "examples" do
         exdir = Dir.pwd
