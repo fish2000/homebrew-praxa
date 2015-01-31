@@ -18,6 +18,7 @@ class Vpp < Formula
     inreplace "CMakeLists.txt", "/usr/include/eigen3", "#{Formula['eigen'].opt_prefix}/include/eigen3"
     #inreplace "examples/CMakeLists.txt", "c++14", "c++1y"
     #inreplace "benchmarks/CMakeLists.txt", "c++14", "c++1y"
+    inreplace "tests/CMakeLists.txt", "c++14", "c++1y"
     
     mkdir "build" do
       system "cmake", "..", *std_cmake_args
