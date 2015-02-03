@@ -7,7 +7,7 @@ class Vpp < Formula
   
   option :cxx11
   depends_on "cmake" => :build
-  depends_on "llvm" => [:build, "clang"]
+  #depends_on "llvm" => [:build, "clang"]
   depends_on "eigen"
   depends_on "homebrew/science/opencv"
   depends_on "fish2000/praxa/iod"
