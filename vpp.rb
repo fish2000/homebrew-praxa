@@ -26,7 +26,9 @@ class Vpp < Formula
     
     mkdir "build" do
       llvm_pth = Formula['llvm'].opt_prefix
-      system "CC=#{llvm_pth}/bin/clang", "CXX=#{llvm_pth}/bin/clang++", "cmake", "..", *std_cmake_args
+      ENV['CC'] = Formula['llvm'].opt_prefix/"bin/clang"
+      ENV['CXX'] = Formula['llvm'].opt_prefix/"bin/clang++"
+      system "cmake", "..", *std_cmake_args
       system "make"
       system "make", "install"
     end
