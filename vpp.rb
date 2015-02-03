@@ -15,13 +15,36 @@ class Vpp < Formula
   depends_on "fish2000/praxa/dige"
 
   def install
-    ENV.cxx11 if build.cxx11?
-    inreplace "CMakeLists.txt", "/usr/include/eigen3", "#{Formula['eigen'].opt_prefix}/include/eigen3"
+    # ENV.cxx11 if build.cxx11?
+    
+    # args = %W[
+    #   -DCMAKE_INSTALL_PREFIX=#{prefix}
+    #   -DCMAKE_BUILD_TYPE=None
+    #   -DCMAKE_VERBOSE_MAKEFILE=OFF
+    #   -DCMAKE_FIND_FRAMEWORK=LAST
+    #   -Wno-dev
+    #   -DCMAKE_OSX_DEPLOYMENT_TARGET=
+    # ]
+    
+    eigenpth = Formula['eigen'].opt_include
+    inreplace "CMakeLists.txt", "/usr/include/eigen3", "#{eigenpth}/eigen3"
+    inreplace "tests/CMakeLists.txt", "/usr/include/eigen3", "#{eigenpth}/eigen3"
+    inreplace "examples/CMakeLists.txt", "/usr/include/eigen3", "#{eigenpth}/eigen3"
+    #inreplace "examples/CMakeLists.txt", "pyrlk", "pyrlk_match"
+    #mv "examples/pyrlk.cc", "examples/pyrlk_match.cc"
+    
+    gccpth = Formula['gcc'].opt_bin
+    iodpth = Formula['iod'].opt_include
+    cvpth = Formula['opencv'].opt_prefix
+    ENV['CC'] = gccpth+"/gcc-4.9"
+    ENV['CXX'] = gccpth+"/g++-4.9"
+    ENV.append_to_cflags "-I#{iodpth}"
+    ENV.append_to_cflags "-I#{cvpth}/include"
+    ENV.prepend "LDFLAGS", "-L#{cvpth}/lib"
+    
+    #system "sh", "./install_thirdparty.sh"
     
     mkdir "build" do
-      gccpth = Formula['gcc'].opt_prefix
-      ENV['CC'] = gccpth+"bin/gcc-4.9"
-      ENV['CXX'] = gccpth+"bin/g++-4.9"
       system "cmake", "..", *std_cmake_args
       system "make"
       system "make", "install"
