@@ -3,19 +3,26 @@ class Iod < Formula
   homepage "https://github.com/matt-42/iod"
   head "https://github.com/matt-42/iod.git", :using => :git
   
-  option :cxx11
-  
   depends_on "cmake" => :build
+  depends_on "llvm"  => :build
   depends_on "boost"
   
   def install
-    ENV.cxx11 if build.cxx11?
+    # Use brewed clang
+    ENV['CC'] = Formula['llvm'].opt_prefix/"bin/clang"
+    ENV['CXX'] = Formula['llvm'].opt_prefix/"bin/clang++"
     
-    #inreplace "CMakeLists.txt", "c++14", "c++1y"
-    inreplace "tools/CMakeLists.txt", "c++14", "c++1y"
-    inreplace "iodUse.cmake", "c++14", "c++1y"
+    mkdir "build" do
+      system "cmake", "..", *std_cmake_args
+      system "make", "install"
+    end
     
-    system "cmake", ".", *std_cmake_args
-    system "make", "install"
+    # cd "tests" do
+    #   mkdir "build" do
+    #     system "cmake", "..", *std_cmake_args
+    #     system "make", "test"
+    #   end
+    # end
+    
   end
 end
