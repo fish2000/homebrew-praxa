@@ -2,6 +2,7 @@
 class Dige < Formula
   homepage "https://github.com/matt-42/dige"
   url "https://github.com/matt-42/dige/archive/master.zip"
+  sha1 "a6acf5863768e26f900f1dc33194942c5dd37ff1"
   version "0.1.0"
   head "https://github.com/matt-42/dige.git", :using => :git
   
@@ -28,6 +29,7 @@ class Dige < Formula
     cargs << "-DCMAKE_INSTALL_PREFIX=#{prefix}"
     
     # build static
+    ohai "Building static library..."
     mkdir "build-static" do
       system "cmake", "..", *cargs
       system "make"
@@ -36,6 +38,7 @@ class Dige < Formula
     rm_rf "build-static"
     
     # build dynamic
+    ohai "Building dynamic library..."
     cargs << "-DBUILD_SHARED_LIBS:BOOL=ON"
     cargs << "-DCMAKE_MACOSX_RPATH=#{lib}"
     mkdir "build-dynamic" do
@@ -56,14 +59,6 @@ class Dige < Formula
         "-DCMAKE_FIND_FRAMEWORK=LAST",
         "-DCMAKE_VERBOSE_MAKEFILE=#{ARGV.verbose? and "ON" or "OFF"}",
         "-Wno-dev"]
-      
-      # patch example source
-      # inreplace "examples/random/main.cc" do |s|
-      #   s.gsub! "<dige/event/wait.h>", "<dige/event/all.h>"
-      #   s.gsub! "dg::key_release", "dg::event::key_release"
-      #   s.gsub! "dg::display", "dg::event::display"
-      #   s.gsub! "dg::click", "dg::event::click"
-      # end
       
       cd "examples" do
         exdir = Dir.pwd
