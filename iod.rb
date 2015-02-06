@@ -17,6 +17,8 @@ class Iod < Formula
       system "make", "install"
     end
     
+    bin.install "tools/generate_symbol_definitions.sh"
+    
     # cd "tests" do
     #   mkdir "build" do
     #     system "cmake", "..", *std_cmake_args
