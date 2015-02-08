@@ -1,6 +1,6 @@
 
 class Halide < Formula
-  homepage ""
+  homepage "http://halide-lang.org/"
   url "https://github.com/halide/Halide/archive/release_2014_10_09.zip"
   version "0.10.9"
   sha1 "bdcf5b9dd425b91050978b7b2fad41894abcb2d4"
