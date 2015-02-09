@@ -3,7 +3,9 @@ class Vpp < Formula
   homepage "https://github.com/matt-42/vpp"
   url "https://github.com/matt-42/vpp/archive/0.2.tar.gz"
   sha1 "b9f0a8a2bb25ecc16ca1b13b40cb6d62813350d6"
-  head "https://github.com/matt-42/vpp.git", :using => :git
+  head "https://github.com/matt-42/vpp.git",
+       :using => :git,
+       :revision => "fb11f0c9a5a05889e61516fecd22dcd8102cbabd"
   
   option "with-benchmarks", "Build and run benchmarks"
   option "with-examples", "Build and install examples"
