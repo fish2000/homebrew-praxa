@@ -57,15 +57,15 @@ class Halide < Formula
       ohai "NOTE: There will likely be a long wait after executing cmake"
       system "cmake", "..", *cargs
       system "make"
-      # I don't know how this busted function signature got in there,
-      # but swig chokes on it; this seems to fix it.
-      inreplace "include/Halide.h", 
-                "EXPORT int (*jit_wrapper_function() const)(const void **);",
-                "EXPORT int *jit_wrapper_function(const void **a) const;"
     end
     
     # Build python bindings (with a thoroughly patched setup.py file)
     if build.with? :python
+      # I don't know how this busted function signature got in there,
+      # but swig chokes on it; this seems to fix it.
+      inreplace "build/include/Halide.h",
+                "EXPORT int (*jit_wrapper_function() const)(const void **);",
+                "EXPORT int *jit_wrapper_function(const void **a) const;"
       cd "python_bindings" do
         # Set things up
         ENV.prepend_create_path "PYTHONPATH", lib/"python2.7/site-packages"
@@ -82,6 +82,9 @@ class Halide < Formula
         system "python", "setup.py", "build_ext"
         system "python", "setup.py", "install", "--prefix=#{prefix}"
       end
+      inreplace "build/include/Halide.h",
+                "EXPORT int *jit_wrapper_function(const void **a) const;",
+                "EXPORT int (*jit_wrapper_function() const)(const void **);"
     end
     
     cd "build" do
@@ -103,13 +106,6 @@ class Halide < Formula
         (bin/"tests").install Dir["bin/performance_*"]
         (bin/"tests").install Dir["bin/warning_*"]
       end
-      # share.mkdir
-      # share.install "test/HalideGenerator.cmake"
-      # etc.mkdir
-      # (etc/"tools").mkdir
-      # (etc/"tools").install Dir["tools/*"]
-      # (etc/"util").mkdir
-      # (etc/"util").install Dir["util/*"]
     end
     
   end
