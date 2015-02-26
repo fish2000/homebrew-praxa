@@ -1,7 +1,8 @@
 
 class Libpd < Formula
   homepage "http://libpd.cc/"
-  head "https://github.com/libpd/libpd.git"
+  url "https://github.com/libpd/libpd.git", :using => :git
+  version "0.1.0"
   
   depends_on :python => :recommended
   depends_on "swig"  => :recommended

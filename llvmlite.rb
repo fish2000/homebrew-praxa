@@ -1,12 +1,12 @@
 
 class Llvmlite < Formula
   homepage "https://github.com/numba/llvmlite"
-  head "https://github.com/numba/llvmlite.git"
+  url "https://github.com/numba/llvmlite.git", :using => :git
+  version "0.1.0"
 
   depends_on "cmake" => :build
   depends_on "llvm" => :build
   depends_on :python
-  #depends_on "enum34" => :python
   
   def install
     # Use brewed clang

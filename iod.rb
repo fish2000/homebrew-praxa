@@ -1,7 +1,8 @@
 
 class Iod < Formula
   homepage "https://github.com/matt-42/iod"
-  head "https://github.com/matt-42/iod.git", :using => :git
+  url "https://github.com/matt-42/iod.git", :using => :git
+  version "0.1.0"
   
   depends_on "cmake" => :build
   depends_on "llvm"  => :build

@@ -1,7 +1,8 @@
 
 class Libimread < Formula
   homepage "https://github.com/fish2000/libimread"
-  head "https://github.com/fish2000/libimread.git", :using => :git
+  url "https://github.com/fish2000/libimread.git", :using => :git
+  version "0.1.0"
   
   depends_on "cmake" => :build
   depends_on "llvm"  => :build
