@@ -1,10 +1,11 @@
 
 class Vpp < Formula
   homepage "https://github.com/matt-42/vpp"
-  url "https://github.com/matt-42/vpp/archive/0.2.tar.gz"
-  sha1 "b9f0a8a2bb25ecc16ca1b13b40cb6d62813350d6"
+  #url "https://github.com/matt-42/vpp/archive/0.2.tar.gz"
+  url "https://github.com/matt-42/vpp/archive/e03f0dd4d33953c0017b946995960e491a928426.zip"
   head "https://github.com/matt-42/vpp.git",
        :using => :git
+  version "0.2.0"
   
   option "with-benchmarks", "Build and run benchmarks"
   option "with-examples", "Build and install examples"
@@ -17,7 +18,8 @@ class Vpp < Formula
   depends_on "fish2000/praxa/dige"
   
   # Fix the CMake build system
-  patch :DATA if build.head?
+  #patch :DATA if build.head?
+  patch :DATA
   
   def install
     # Use brewed Clang
