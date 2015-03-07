@@ -59,19 +59,14 @@ class Halide < Formula
       system "make"
     end
     
-    # Build python bindings (with a thoroughly patched setup.py file)
+    # Build python bindings
     if build.with? :python
-      # I don't know how this busted function signature got in there,
-      # but swig chokes on it; this seems to fix it.
-      inreplace "build/include/Halide.h",
-                "EXPORT int (*jit_wrapper_function() const)(const void **);",
-                "EXPORT int *jit_wrapper_function(const void **a) const;"
       cd "python_bindings" do
         # Set things up
         ENV.prepend_create_path "PYTHONPATH", lib/"python2.7/site-packages"
         ENV['HALIDE_ROOT'] = ENV['HALIDE_BUILD_PATH'] = buildpath
         swig = Formula['swig'].opt_prefix/"bin/swig"
-
+        
         # Run swig
         system swig, "-c++", "-python",
                      "-w362,325,314,389,381,382,361,401,503,509",
@@ -82,9 +77,6 @@ class Halide < Formula
         system "python", "setup.py", "build_ext"
         system "python", "setup.py", "install", "--prefix=#{prefix}"
       end
-      inreplace "build/include/Halide.h",
-                "EXPORT int *jit_wrapper_function(const void **a) const;",
-                "EXPORT int (*jit_wrapper_function() const)(const void **);"
     end
     
     cd "build" do
