@@ -1,9 +1,9 @@
 
 class Halide < Formula
   homepage "http://halide-lang.org/"
-  url "https://github.com/halide/Halide/archive/release_2014_10_09.zip"
-  version "0.10.9"
-  sha1 "bdcf5b9dd425b91050978b7b2fad41894abcb2d4"
+  url "https://github.com/halide/Halide/archive/release_2015_02_25.zip"
+  version "0.10.10"
+  sha1 "ffc89331f88d23c6859b8bc929bad33bd378123a"
   head "https://github.com/halide/Halide.git"
   
   option "with-opengl", "Enable OpenGL codepaths"
