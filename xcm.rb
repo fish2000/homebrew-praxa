@@ -8,7 +8,7 @@ class Xcm < Formula
   depends_on "fish2000/praxa/libxcm"
   
   def install
-    system "./configure", "--prefix=#{prefix}", "--with-x11"
+    system "./configure", "--prefix=#{prefix}", "--with-x11", "--without-oyranos"
     system "make"
     system "make install"
   end
