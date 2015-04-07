@@ -9,6 +9,8 @@ class Libxcm < Formula
     system "./configure", "--prefix=#{prefix}", "--with-x11"
     system "make"
     system "make install"
+    share.install lib/"cmake"
+    share.install lib/"pkgconfig"
   end
 end
 
