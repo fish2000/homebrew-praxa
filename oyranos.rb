@@ -5,8 +5,16 @@ class Oyranos < Formula
   
   depends_on "cmake" => :build
   depends_on "llvm"  => :build
+  depends_on "gettext" => :build
+  depends_on "qt" => :recommended
+  depends_on "libpng"
+  depends_on "fltk"
+  depends_on "exiv2"
+  depends_on "cairo"
+  depends_on "libraw"
+  depends_on "little-cms2"
   depends_on "fish2000/praxa/libxcm"
-  depends_on "fish2000/praxa/xcm"
+  depends_on "fish2000/praxa/elektra"
   depends_on :x11
   
   def install
