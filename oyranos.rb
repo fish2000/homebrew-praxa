@@ -28,13 +28,13 @@ class Oyranos < Formula
     # ENV['CPPFLAGS'] = "-I#{Formula['gettext'].opt_prefix}/include"
     # ENV['CXXFLAGS'] = "-I#{Formula['gettext'].opt_prefix}/include"
     
-    cargs = std_cmake_args + %W[
-      -DCMAKE_INCLUDE_PATH=#{Formula['gettext'].opt_prefix}/include:/usr/include/libxml2:/opt/X11/include:/opt/X11/include/freetype2:/System/Library/Frameworks/OpenGL.framework/Versions/Current/Headers
-      -DCMAKE_LIBRARY_PATH=#{Formula['gettext'].opt_prefix}/lib:/opt/X11/lib:/System/Library/Frameworks/OpenGL.framework/Versions/Current/Libraries
-    ]
+    # cargs = std_cmake_args + %W[
+    #   -DCMAKE_INCLUDE_PATH=#{Formula['gettext'].opt_prefix}/include:/usr/include/libxml2:/opt/X11/include:/opt/X11/include/freetype2:/System/Library/Frameworks/OpenGL.framework/Versions/Current/Headers
+    #   -DCMAKE_LIBRARY_PATH=#{Formula['gettext'].opt_prefix}/lib:/opt/X11/lib:/System/Library/Frameworks/OpenGL.framework/Versions/Current/Libraries
+    # ]
     
     mkdir "build" do
-      system "cmake", "..", *cargs
+      system "cmake", "..", *std_cmake_args
       system "make", "install"
     end
     
