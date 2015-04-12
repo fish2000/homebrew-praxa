@@ -2,13 +2,15 @@
 class Halide < Formula
   homepage "http://halide-lang.org/"
   url "https://github.com/halide/Halide/archive/release_2015_02_25.zip"
-  version "0.10.10"
+  version "0.11.0"
   sha1 "ffc89331f88d23c6859b8bc929bad33bd378123a"
   head "https://github.com/halide/Halide.git"
   
   option "with-opengl", "Enable OpenGL codepaths"
   option "with-opencl", "Enable OpenCL codepaths"
+  
   option "without-extras", "Skip building tests, apps, and tutorial code"
+  option "without-generator-tests", "Skip generator tests (see http://git.io/vvtMD)"
   
   depends_on "cmake" => :build
   depends_on "llvm" => :build
@@ -18,7 +20,7 @@ class Halide < Formula
   depends_on "numpy" => :python if build.with? :python
   depends_on "PIL" => :python if build.with? :python
   
-  patch :DATA if build.with? :python
+  patch :DATA if (build.with? :python and not build.head?)
   
   def install
     # Use brewed clang
@@ -27,12 +29,6 @@ class Halide < Formula
     ENV['CXX'] = Formula['llvm'].opt_prefix/"bin/clang++"
     ENV['CXX11'] = "1"
     ENV.cxx11
-    
-    if build.without? "extras"
-      inreplace "CMakeLists.txt", "add_subdirectory(test)", ""
-      inreplace "CMakeLists.txt", "add_subdirectory(apps)", ""
-      inreplace "CMakeLists.txt", "add_subdirectory(tutorial)", ""
-    end
     
     # Extend cmake args
     cargs = std_cmake_args + %W[
@@ -52,6 +48,16 @@ class Halide < Formula
       -DWITH_APPS=#{build.without? "extras" and "OFF" or "ON"}
     ]
     
+    if build.without? "extras"
+      inreplace "CMakeLists.txt", "add_subdirectory(test)", ""
+      inreplace "CMakeLists.txt", "add_subdirectory(apps)", ""
+      inreplace "CMakeLists.txt", "add_subdirectory(tutorial)", ""
+    end
+    
+    if build.without? "generator-tests"
+      cargs << "-DWITH_TEST_GENERATORS=OFF"
+    end
+    
     # build the library
     mkdir "build" do
       ohai "NOTE: There will likely be a long wait after executing cmake"
@@ -64,7 +70,8 @@ class Halide < Formula
       cd "python_bindings" do
         # Set things up
         ENV.prepend_create_path "PYTHONPATH", lib/"python2.7/site-packages"
-        ENV['HALIDE_ROOT'] = ENV['HALIDE_BUILD_PATH'] = buildpath
+        ENV['HALIDE_ROOT'] = buildpath
+        ENV['HALIDE_BUILD_PATH'] = buildpath/"build"
         swig = Formula['swig'].opt_prefix/"bin/swig"
         
         # Run swig
