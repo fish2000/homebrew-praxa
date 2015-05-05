@@ -1,6 +1,6 @@
 
 class Folly < Formula
-  ENV['FOLLY_VERSION'] = "0.1.0"
+  ENV['FOLLY_VERSION'] = "37.0"
   ENV['GTEST_VERSION'] = "1.7.0"
   
   homepage "https://github.com/facebook/folly"
@@ -30,10 +30,10 @@ class Folly < Formula
   end
   
   # option (just the one)
-  option "without-cxx11", "Don't build with C++11"
+  option "without-cxx11", "Build without C++11 support"
   
   # Build necessities (double-conversion is the scons freak, specifically)
-  depends_on "llvm"     => :build
+  depends_on "llvm"     =>[:build, "with-clang"]
   depends_on "autoconf" => :build
   depends_on "automake" => :build
   depends_on "libtool"  => :build
