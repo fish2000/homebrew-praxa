@@ -5,7 +5,7 @@ class Arcan < Formula
   
   depends_on "cmake" => :build
   depends_on "llvm"  => :build
-  depends_on "fish200/praxa/openctm"
+  depends_on "openctm"
   depends_on "freetype"
   depends_on "luajit"
   depends_on "sqlite"
@@ -22,9 +22,9 @@ class Arcan < Formula
       -DDISABLE_FRAMESERVERS=OFF
     ]
     
-    cd "arcan" do
+    cd "src" do
       mkdir "build" do
-        system "cmake", "../src", *std_cmake_args
+        system "cmake", "..", *cargs
         system "make", "install"
       end
     end
