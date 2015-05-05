@@ -29,6 +29,9 @@ class Folly < Formula
     sha256 "247ca18dd83f53deb1328be17e4b1be31514cedfc1e3424f672bf11fd7e0d60d"
   end
   
+  # option (just the one)
+  option "without-cxx11", "Don't build with C++11"
+  
   # Build necessities (double-conversion is the scons freak, specifically)
   depends_on "llvm"     => :build
   depends_on "autoconf" => :build
@@ -94,7 +97,6 @@ class Folly < Formula
     # Use brewed clang for folly (Apple Clang, as of 6.1, is not up to it)
     ENV['CC']  =  Formula['llvm'].opt_prefix/"bin/clang"
     ENV['CXX'] =  Formula['llvm'].opt_prefix/"bin/clang++"
-    ENV.cxx11
     
     cd "folly" do
       
@@ -103,6 +105,16 @@ class Folly < Formula
       # N.B. Sent up a PR for it: https://github.com/facebook/folly/pull/201
       inreplace "Makefile.am",
                 "nobase_follyinclude_HEADERS += detail/Clock.h", ""
+      
+      if not build.without? "cxx11"
+        # Fucking with configure.ac's idea of $STD in this way is totes
+        # super dangerous -- it's like corpus-callosum severing, but
+        # for autotools -- and yet it totally works; ./configure's tests run
+        # with -std=c++0x but make uses the Homebrew ENV.cxx11 stuff (!)
+        ENV.cxx11
+        inreplace "configure.ac",
+                  "CXXFLAGS=\"$STD $CXXFLAGS\"", ""
+      end
       
       cd "test" do
         # disable tests that furnish subversive or controversial results
@@ -129,16 +141,8 @@ class Folly < Formula
       mkdir tt do
         rm_rf "src" # WHAT THE HELL IS THIS MARCY
         resource("gtest").stage { tt.install Dir["./*"] }
-        # system "./configure",
-        #        "--prefix=#{prefix}",
-        #        "--disable-dependency-tracking"
-        # system "make"
       end
       
-      # D'BUGG
-      # system "open", tt
-      
-      # MAKING IT ALL UP THE WHOLE TIME
       system "make"
       system "make", "check"
       system "make", "install"
