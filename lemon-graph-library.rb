@@ -9,8 +9,9 @@ class LemonGraphLibrary < Formula
   version ENV['LEMON_VERSION']
   
   resource "cylemon" do
-    url "https://github.com/cstraehl/cylemon/archive/1c1f08df80e95de0be6a1a84b62abb3e75f36b5a.zip"
-    sha256 "1d435a079cb5bc16b3e0ef9391b2da9a15c18305b41b595b3595e81f80d12dad"
+    url "https://github.com/ilastik/cylemon/archive/21f892908c689c7ec4526b76f833be77e5a307aa.zip"
+    #sha256 "1d435a079cb5bc16b3e0ef9391b2da9a15c18305b41b595b3595e81f80d12dad"
+    sha256 "4b11ce7cf0f3ee7e60076622b8673339a5f344fde1a8e608bfe00caf831de26e"
   end
   
   resource "pylemon" do
@@ -42,6 +43,11 @@ class LemonGraphLibrary < Formula
     ENV['CC'] = Formula['llvm'].opt_prefix/"bin/clang"
     ENV['CXX'] = Formula['llvm'].opt_prefix/"bin/clang++"
     ENV.cxx11 unless build.without? "cxx11"
+    ENV.append_to_cflags  "-Wno-unused-function"
+    ENV.append_to_cflags  "-Wno-unused-variable"
+    ENV.append_to_cflags  "-stdlib=libc++"
+    ENV.append 'LDFLAGS', "-stdlib=libc++"
+    ENV.append 'LDFLAGS', "-lc++"
     
     doing_python = (build.with? "python" or build.with? "pure-python")
     
@@ -88,7 +94,6 @@ class LemonGraphLibrary < Formula
           system "python", "setup.py", "build_ext",
                                        "--cython-cplus",
                                        "--no-openmp",
-                                       "-Wno-unused-function",
                                        "-I#{include}",
                                        "-L#{lib}" 
           
