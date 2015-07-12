@@ -1,9 +1,12 @@
 
 class Halide < Formula
   homepage "http://halide-lang.org/"
-  url "https://github.com/halide/Halide/archive/release_2015_04_22.zip"
-  version "0.11.0"
-  sha256 "403a8289c05295849f6b911945292e5d54ce8c82d9d2e8b9d2cbdbf71c4349a2"
+  url "https://github.com/halide/Halide/archive/release_2015_06_03.zip"
+  version "0.12.0"
+  sha256 "48379f783be6c563cc3e245e5508ea8f3a2c659c59087883f27fd1a361d493e6"
+  #url "https://github.com/halide/Halide/archive/release_2015_04_22.zip"
+  #version "0.11.0"
+  #sha256 "403a8289c05295849f6b911945292e5d54ce8c82d9d2e8b9d2cbdbf71c4349a2"
   head "https://github.com/halide/Halide.git"
   
   devel do
@@ -34,23 +37,20 @@ class Halide < Formula
   
   def install
     # Use brewed clang
-    # ENV['LLVM_CONFIG'] = Formula['llvm'].opt_prefix/"bin/llvm-config"
-    # ENV['CC'] = ENV['CLANG'] = Formula['llvm'].opt_prefix/"bin/clang"
-    # ENV['CXX'] = Formula['llvm'].opt_prefix/"bin/clang++"
-    
     ENV['LLVM_CONFIG'] = Formula['llvm'].opt_prefix/"bin/llvm-config"
     ENV['CC'] = ENV['CLANG'] = Formula['llvm'].opt_prefix/"bin/clang"
     ENV['CXX'] = Formula['llvm'].opt_prefix/"bin/clang++"
     
     ENV['CXX11'] = "1"
     ENV.cxx11
+    ENV.deparallelize
     
     # Extend cmake args
     cargs = std_cmake_args + %W[
       -DLLVM_BIN=#{Formula['llvm'].opt_prefix/"bin"}
       -DLLVM_INCLUDE=#{Formula['llvm'].opt_prefix/"include"}
       -DLLVM_LIB=#{Formula['llvm'].opt_prefix/"lib"}
-      -DLLVM_VERSION=35
+      -DLLVM_VERSION=37
       -DTARGET_NATIVE_CLIENT=OFF
       -DTARGET_AARCH64=OFF
       -DTARGET_ARM=OFF
@@ -69,12 +69,12 @@ class Halide < Formula
       inreplace "CMakeLists.txt", "add_subdirectory(tutorial)", ""
     end
     
-    # inreplace "src/CMakeLists.txt", "le32-unknown-nacl-unknown",    "x86_64-unknown-unknown-unknown"
-    # inreplace "src/CMakeLists.txt", "le64-unknown-unknown-unknown", "x86_64-unknown-unknown-unknown"
-    
     if build.without? "generator-tests"
       cargs << "-DWITH_TEST_GENERATORS=OFF"
     end
+    
+    inreplace "apps/local_laplacian/CMakeLists.txt",
+      "local_laplacian.cpp", "local_laplacian_gen.cpp"
     
     # build the library
     mkdir "build" do
