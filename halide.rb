@@ -52,9 +52,9 @@ class Halide < Formula
       -DLLVM_LIB=#{Formula['llvm'].opt_prefix/"lib"}
       -DLLVM_VERSION=37
       -DTARGET_NATIVE_CLIENT=OFF
-      -DTARGET_AARCH64=OFF
-      -DTARGET_ARM=OFF
-      -DTARGET_PTX=OFF
+      -DTARGET_AARCH64=ON
+      -DTARGET_ARM=ON
+      -DTARGET_PTX=ON
       -DTARGET_X86=ON
       -DTARGET_OPENCL=#{build.with? "opencl" and "ON" or "OFF"}
       -DTARGET_OPENGL=#{build.with? "opengl" and "ON" or "OFF"}
