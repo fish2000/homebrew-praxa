@@ -43,7 +43,7 @@ class Halide < Formula
     
     ENV['CXX11'] = "1"
     ENV.cxx11
-    ENV.deparallelize
+    # ENV.deparallelize
     
     # Extend cmake args
     cargs = std_cmake_args + %W[
@@ -58,9 +58,18 @@ class Halide < Formula
       -DTARGET_X86=ON
       -DTARGET_OPENCL=#{build.with? "opencl" and "ON" or "OFF"}
       -DTARGET_OPENGL=#{build.with? "opengl" and "ON" or "OFF"}
-      -DHALIDE_SHARED_LIBRARY=ON
       -DWITH_TUTORIALS=#{build.without? "extras" and "OFF" or "ON"}
       -DWITH_APPS=#{build.without? "extras" and "OFF" or "ON"}
+    ]
+    
+    cargs.keep_if { |v| v !~ /DCMAKE_VERBOSE_MAKEFILE/ }
+    
+    sargs = cargs + %W[
+      -DHALIDE_SHARED_LIBRARY=OFF
+    ]
+    
+    dargs = cargs + %W[
+      -DHALIDE_SHARED_LIBRARY=ON
     ]
     
     if build.without? "extras"
@@ -70,16 +79,23 @@ class Halide < Formula
     end
     
     if build.without? "generator-tests"
-      cargs << "-DWITH_TEST_GENERATORS=OFF"
+      sargs << "-DWITH_TEST_GENERATORS=OFF"
+      dargs << "-DWITH_TEST_GENERATORS=OFF"
     end
     
-    inreplace "apps/local_laplacian/CMakeLists.txt",
-      "local_laplacian.cpp", "local_laplacian_gen.cpp"
-    
     # build the library
-    mkdir "build" do
-      ohai "NOTE: There will likely be a long wait after executing cmake"
-      system "cmake", "..", *cargs
+    ohai "NOTE: There will likely be a long wait after executing cmake"
+    mkdir "build-dynamic" do
+      system "cmake", "..", *dargs
+      system "make"
+    end
+    if not build.without? "extras"
+      inreplace "CMakeLists.txt", "add_subdirectory(test)", ""
+      inreplace "CMakeLists.txt", "add_subdirectory(apps)", ""
+      inreplace "CMakeLists.txt", "add_subdirectory(tutorial)", ""
+    end
+    mkdir "build-static" do
+      system "cmake", "..", *sargs
       system "make"
     end
     
@@ -89,7 +105,7 @@ class Halide < Formula
         # Set things up
         ENV.prepend_create_path "PYTHONPATH", lib/"python2.7/site-packages"
         ENV['HALIDE_ROOT'] = buildpath
-        ENV['HALIDE_BUILD_PATH'] = buildpath/"build"
+        ENV['HALIDE_BUILD_PATH'] = buildpath/"build-static"
         swig = Formula['swig'].opt_prefix/"bin/swig"
         
         # Run swig
@@ -104,9 +120,12 @@ class Halide < Formula
       end
     end
     
-    cd "build" do
-      # There is no "make install" target, for some reason --
-      # hence this DIY stuff here
+    # There is no "make install" target, for some reason --
+    # hence this DIY stuff here
+    cd "build-static" do
+      lib.install Dir["lib/*"]
+    end
+    cd "build-dynamic" do
       lib.install Dir["lib/*"]
       include.mkdir
       include.install Dir["include/*"]
