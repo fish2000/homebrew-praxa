@@ -13,7 +13,7 @@ class Vpp < Formula
   depends_on "cmake" => :build
   depends_on "llvm" => :build
   depends_on "eigen"
-  depends_on "fish2000/praxa/opencv"
+  depends_on "homebrew/science/opencv"
   depends_on "fish2000/praxa/iod"
   depends_on "fish2000/praxa/dige"
   
