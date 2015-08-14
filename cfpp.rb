@@ -2,20 +2,40 @@
 class Cfpp < Formula
   homepage "https://github.com/macmade/CFPP"
   url "https://github.com/macmade/CFPP.git", :using => :git
-  version "0.1.0"
+  version "0.2.0"
   
   depends_on :xcode => :build
+  depends_on "git" => :build
   
   def install
-    xcodebuild 'SYMROOT=build',
-               '-target', 'CF++ Example',
-               '-scheme', 'CF++ Example'
+    system 'git',
+           'submodule', 'update', '--init'
     
-    frameworks.install  'build/Debug/CF++.framework'
-    lib.install         'build/Debug/libCF++.a'
-    lib.install         'build/Debug/libCF++.dylib'
-    bin.install         'build/Debug/CFPPExample'
-    include.install Dir['build/Debug/usr/local/include/*.h']
+    # xcodebuild 'SYMROOT=build',
+    #            '-configuration',  'Release',
+    #            '-target',         'CF++ Mac Framework (C++11)',
+    #            '-scheme',         'CF++ Mac Framework (C++11)'
+    #
+    # xcodebuild 'SYMROOT=build',
+    #            '-configuration',  'Release',
+    #            '-target',         'CF++ Mac Static Library (C++11)',
+    #            '-scheme',         'CF++ Mac Static Library (C++11)'
+    #
+    # xcodebuild 'SYMROOT=build',
+    #            '-configuration',  'Release',
+    #            '-target',         'CF++ Mac Dynamic Library (C++11)',
+    #            '-scheme',         'CF++ Mac Dynamic Library (C++11)'
+    
+    xcodebuild 'SYMROOT=build',
+               '-configuration',  'Release',
+               '-target',         'CF++ (C++11)',
+               '-scheme',         'CF++ (C++11)'
+    
+    # bin.install       'build/Release/Unit-Tests' <=== errors out
+    frameworks.install  'build/Release/CF++.framework'
+    lib.install         'build/Release/libCF++.a'
+    lib.install         'build/Release/libCF++.dylib'
+    include.install Dir['build/Release/usr/local/include/*.hpp']
   end
 end
 
