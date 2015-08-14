@@ -31,11 +31,16 @@ class Cfpp < Formula
                '-target',         'CF++ (C++11)',
                '-scheme',         'CF++ (C++11)'
     
-    # bin.install       'build/Release/Unit-Tests' <=== errors out
-    frameworks.install  'build/Release/CF++.framework'
-    lib.install         'build/Release/libCF++.a'
-    lib.install         'build/Release/libCF++.dylib'
-    include.install Dir['build/Release/usr/local/include/*.hpp']
+    # bin.install                'build/Release/Unit-Tests' <=== errors out
+    
+    frameworks.install           'build/Release/CF++.framework'
+    lib.install                  'build/Release/libCF++.a'
+    lib.install                  'build/Release/libCF++.dylib'
+    include.install              'build/Release/usr/local/include/CF++.hpp'
+    
+    (include/"CF++").mkdir
+    (include/"CF++").install Dir['build/Release/usr/local/include/CFPP*.hpp']
+    
   end
 end
 
