@@ -2,8 +2,8 @@
 class Hiptext < Formula
   desc "Turn images into text better than caca/aalib"
   homepage "https://github.com/fish2000/hiptext"
-  url "https://github.com/fish2000/hiptext/archive/0.1.0.zip"
-  sha256 "bfabc8db7c2c60f56e59e64c588c48cf1d7f4a15f7bab9f4ef75ea95be65bd14"
+  url "https://github.com/fish2000/hiptext/archive/0.1.1.zip"
+  sha256 "15e5cd151d3531dd497a1065ac0b9384d6fc5f50f21b261b2c497b32c2a3ad3f"
   head "https://github.com/fish2000/hiptext.git", :using => :git
   
   # depends_on "llvm" => :build
