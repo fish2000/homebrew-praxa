@@ -1,8 +1,10 @@
 
 class Cfpp < Formula
   homepage "https://github.com/macmade/CFPP"
-  url "https://github.com/macmade/CFPP.git", :using => :git
-  version "0.2.0"
+  head "https://github.com/macmade/CFPP.git", :using => :git
+  url "https://github.com/macmade/CFPP/archive/0.1.6.zip"
+  sha256 "882500a4c2ea6189448e64df49633e41d17be0c84f04af0067f51cf6816f568a"
+  version "0.1.6"
   
   depends_on :xcode => :build
   depends_on "git" => :build
