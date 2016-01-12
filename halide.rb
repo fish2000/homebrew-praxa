@@ -50,7 +50,7 @@ class Halide < Formula
       -DLLVM_BIN=#{Formula['llvm'].opt_prefix/"bin"}
       -DLLVM_INCLUDE=#{Formula['llvm'].opt_prefix/"include"}
       -DLLVM_LIB=#{Formula['llvm'].opt_prefix/"lib"}
-      -DLLVM_VERSION=37
+      -DLLVM_VERSION=38
       -DTARGET_NATIVE_CLIENT=OFF
       -DTARGET_AARCH64=ON
       -DTARGET_ARM=ON
