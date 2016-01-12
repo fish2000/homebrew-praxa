@@ -13,11 +13,15 @@ class Libimread < Formula
   
   def install
     # Use brewed clang
-    ENV['CC'] = Formula['llvm'].opt_prefix/"bin/clang"
-    ENV['CXX'] = Formula['llvm'].opt_prefix/"bin/clang++"
+    # ENV['CC'] = Formula['llvm'].opt_prefix/"bin/clang"
+    # ENV['CXX'] = Formula['llvm'].opt_prefix/"bin/clang++"
+    ENV.cxx11
+    
+    cargs = std_cmake_args
+    cargs.keep_if { |v| v !~ /DCMAKE_VERBOSE_MAKEFILE/ }
     
     mkdir "build" do
-      system "cmake", "..", *std_cmake_args
+      system "cmake", "..", *cargs
       system "make", "install"
     end
     
