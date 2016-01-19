@@ -1,65 +1,71 @@
 
 class Halide < Formula
   homepage "http://halide-lang.org/"
-  url "https://github.com/halide/Halide/archive/release_2015_06_03.zip"
-  version "0.12.0"
-  sha256 "48379f783be6c563cc3e245e5508ea8f3a2c659c59087883f27fd1a361d493e6"
-  #url "https://github.com/halide/Halide/archive/release_2015_04_22.zip"
-  #version "0.11.0"
-  #sha256 "403a8289c05295849f6b911945292e5d54ce8c82d9d2e8b9d2cbdbf71c4349a2"
   head "https://github.com/halide/Halide.git"
+  url "https://github.com/halide/Halide/archive/release_2015_12_17.tar.gz"
+  sha256 "8c9150fb04531fff02ae15138f9365fe2f5aafbf679ed28913d2192794bafb05"
+  version "0.15.0"
   
   devel do
-    #sha256 "6d5a1624d2378415b7450208042812955a3a1909393c80811eab27b5cb8fd254"
     url "https://github.com/halide/Halide/archive/64802d53498c953acb41a31a5bd5ec2bc175cdcb.zip" # busted
     #url "https://github.com/halide/Halide/archive/a6bffdfb9cd143e83ef2e66353b9a29d7ec365ff.zip" # head
     #url "https://github.com/halide/Halide/archive/4ab5c13cb74fe1a7b8e999296aef49e2c2a15933.zip" # 'missing file'
     #url "https://github.com/halide/Halide/archive/a6942340e740b36a2fa85176e963be890cc6abb3.zip" # pretty old
-    #url "https://github.com/halide/Halide/archive/master.zip"
-    version "0.12.0"
+    version "0.15.0"
   end
   
-  option "with-opengl", "Enable OpenGL codepaths"
+  option "with-metal", "Enable Apple Metal codepaths"
   option "with-opencl", "Enable OpenCL codepaths"
+  option "with-opengl", "Enable OpenGL/ES codepaths"
+  option "with-opengl-compute", "Enable OpenGL Compute codepaths"
   
   option "without-extras", "Skip building tests, apps, and tutorial code"
   option "without-generator-tests", "Skip generator tests (see http://git.io/vvtMD)"
   
   depends_on "cmake" => :build
-  depends_on "llvm" => :build
+  depends_on "llvm"  => :build
   depends_on :python => :recommended
-  depends_on "swig" if build.with? :python
-  depends_on "libpng" if build.with? :python
+  depends_on "swig"             if build.with? :python
+  depends_on "libpng"           if build.with? :python
   depends_on "numpy" => :python if build.with? :python
-  depends_on "PIL" => :python if build.with? :python
+  depends_on "PIL"   => :python if build.with? :python
   
   patch :DATA if (build.with? :python and not build.head?)
   
   def install
     # Use brewed clang
-    ENV['LLVM_CONFIG'] = Formula['llvm'].opt_prefix/"bin/llvm-config"
-    ENV['CC'] = ENV['CLANG'] = Formula['llvm'].opt_prefix/"bin/clang"
-    ENV['CXX'] = Formula['llvm'].opt_prefix/"bin/clang++"
-    
+    llvm = Formula['llvm'].opt_prefix
+    ENV['LLVM_CONFIG'] = llvm/"bin/llvm-config"
+    ENV['CC'] = ENV['CLANG'] = ENV['CXX'] = llvm/"bin/clang"
+    ENV['CXX'] += "++"
     ENV['CXX11'] = "1"
     ENV.cxx11
-    # ENV.deparallelize
+    
+    # Get LLVM version "MAJOR.MINOR.PATCH" and reduce it
+    # to just "MAJORMINOR" e.g. "3.8.0svn" becomes "38"
+    # ... as this format is expected by Halide's CMakeLists.txt
+    llvm_version = %x[#{ENV['LLVM_CONFIG']} --version]
+    llvm_version_short = llvm_version.gsub(/.(\w+)$/, "").gsub(/[.\n\s]+/m, "")
     
     # Extend cmake args
     cargs = std_cmake_args + %W[
-      -DLLVM_BIN=#{Formula['llvm'].opt_prefix/"bin"}
-      -DLLVM_INCLUDE=#{Formula['llvm'].opt_prefix/"include"}
-      -DLLVM_LIB=#{Formula['llvm'].opt_prefix/"lib"}
-      -DLLVM_VERSION=38
+      -DLLVM_BIN=#{llvm/"bin"}
+      -DLLVM_INCLUDE=#{llvm/"include"}
+      -DLLVM_LIB=#{llvm/"lib"}
+      -DLLVM_VERSION=#{llvm_version_short}
       -DTARGET_NATIVE_CLIENT=OFF
       -DTARGET_AARCH64=ON
       -DTARGET_ARM=ON
+      -DTARGET_METAL=#{build.with? "metal" and "ON" or "OFF"}
+      -DTARGET_MIPS=ON
       -DTARGET_PTX=ON
       -DTARGET_X86=ON
       -DTARGET_OPENCL=#{build.with? "opencl" and "ON" or "OFF"}
       -DTARGET_OPENGL=#{build.with? "opengl" and "ON" or "OFF"}
+      -DTARGET_OPENGLCOMPUTE=#{build.with? "opengl-compute" and "ON" or "OFF"}
       -DWITH_TUTORIALS=#{build.without? "extras" and "OFF" or "ON"}
       -DWITH_APPS=#{build.without? "extras" and "OFF" or "ON"}
+      -DWITH_UTILS=#{build.without? "extras" and "OFF" or "ON"}
     ]
     
     cargs.keep_if { |v| v !~ /DCMAKE_VERBOSE_MAKEFILE/ }
@@ -133,6 +139,7 @@ class Halide < Formula
       bin.install "bin/bitcode2cpp"
       bin.install "bin/build_halide_h"
       if not build.without? "extras"
+        bin.install "bin/HalideTraceViz"
         (bin/"tests").mkdir
         (bin/"tests").install Dir["bin/correctness_*"]
         (bin/"tests").install Dir["bin/error_*"]
