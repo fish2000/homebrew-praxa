@@ -2,7 +2,7 @@
 class Libimread < Formula
   homepage "https://github.com/fish2000/libimread"
   url "https://github.com/fish2000/libimread.git", :using => :git
-  version "0.1.0"
+  version "0.2.0"
   
   option "with-brewed-clang",
          "Compile using Clang from Homebrew-installed LLVM package"
