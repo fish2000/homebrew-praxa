@@ -4,6 +4,8 @@ class Libimread < Formula
   url "https://github.com/fish2000/libimread.git", :using => :git
   version "0.2.0"
   
+  option "skip-tests",
+         "Skip running tests"
   option "with-brewed-clang",
          "Compile using Clang from Homebrew-installed LLVM package"
   
@@ -33,6 +35,7 @@ class Libimread < Formula
     mkdir "build" do
       system "cmake", "..", *cargs
       system "make", "install"
+      bin.install "imread_tests"
     end
     
     if build.with? :python
@@ -49,5 +52,20 @@ class Libimread < Formula
       end
     end
     
+    if not build.with? "skip-tests"
+      cd "build" do
+        system "ctest", "-j4",
+                        "-D", "Experimental",
+                        "--output-on-failure"
+      end
+    end
+    
   end
+  
+  def test
+    system bin/"imread_tests", "--success",
+                               "--durations", "yes",
+                               "--abortx", "10"
+  end
+  
 end
