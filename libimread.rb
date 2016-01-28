@@ -6,6 +6,9 @@ class Libimread < Formula
   
   option "skip-tests",
          "Skip running tests"
+  option "run-extra-tests",
+       %s[Run an extra test phase and post results to the project CDash:
+             http://my.cdash.org/index.php?project=libimread]
   option "with-brewed-clang",
          "Compile using Clang from Homebrew-installed LLVM package"
   
@@ -53,7 +56,7 @@ class Libimread < Formula
       end
     end
     
-    if not build.with? "skip-tests"
+    if build.with? "run-extra-tests"
       cd "build" do
         begin
           system "ctest", "-j4",
