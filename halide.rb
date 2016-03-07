@@ -22,15 +22,15 @@ class Halide < Formula
   option "without-extras", "Skip building tests, apps, and tutorial code"
   option "without-generator-tests", "Skip generator tests (see http://git.io/vvtMD)"
   
-  depends_on "cmake" => :build
-  depends_on "llvm"  => :build
-  depends_on :python => :recommended
-  depends_on "swig"             if build.with? :python
-  depends_on "libpng"           if build.with? :python
-  depends_on "numpy" => :python if build.with? :python
-  depends_on "PIL"   => :python if build.with? :python
+  depends_on "cmake"  => :build
+  depends_on "llvm"   => :build
+  depends_on :python3 => :recommended
+  depends_on "libpng"             if build.with? :python3
+  # depends_on "numpy"  => :python3 if build.with? :python3
+  # depends_on "PIL"    => :python3 if build.with? :python3
+  depends_on :x11
   
-  patch :DATA if (build.with? :python and not build.head?)
+  patch :DATA if (build.with? :python3 and not build.head?)
   
   def install
     # Use brewed clang
@@ -106,23 +106,24 @@ class Halide < Formula
     end
     
     # Build python bindings
-    if build.with? :python
+    if build.with? :python3
       cd "python_bindings" do
         # Set things up
-        ENV.prepend_create_path "PYTHONPATH", lib/"python2.7/site-packages"
+        ENV.prepend_create_path "PYTHONPATH", lib/"python3.5/site-packages"
         ENV['HALIDE_ROOT'] = buildpath
         ENV['HALIDE_BUILD_PATH'] = buildpath/"build-static"
-        swig = Formula['swig'].opt_prefix/"bin/swig"
-        
-        # Run swig
-        system swig, "-c++", "-python",
-                     "-w362,325,314,389,381,382,361,401,503,509",
-                     "-I#{buildpath}/build/include",
-                     "halide/cHalide.i"
         
         # Build and install
-        system "python", "setup.py", "build_ext"
-        system "python", "setup.py", "install", "--prefix=#{prefix}"
+        # system "python", "setup.py", "build_ext"
+        # system "python", "setup.py", "install", "--prefix=#{prefix}"
+        pcargs = std_cmake_args
+        pcargs.keep_if { |v| v !~ /DCMAKE_VERBOSE_MAKEFILE/ }
+        
+        mkdir "build" do
+          system "cmake", "..", *pcargs
+          system "make"
+        end
+        
       end
     end
     
@@ -193,76 +194,3 @@ class Halide < Formula
     end
   end
 end
-
-__END__
-diff --git a/python_bindings/setup.py b/python_bindings/setup.py
-index b7be7c4..5212776 100644
---- a/python_bindings/setup.py
-+++ b/python_bindings/setup.py
-@@ -1,6 +1,6 @@
- from distutils.core import setup
- from distutils.extension import Extension
--import os, os.path, sys
-+import os, os.path
- import glob
- 
- import subprocess
-@@ -8,28 +8,28 @@ import shutil
- 
- build_prefix = os.getenv('BUILD_PREFIX')
- if not build_prefix:
--    build_prefix = ''
--
--halide_root = os.getenv('HALIDE_ROOT')
-+    build_prefix = 'build'
-+    halide_root = os.getenv('HALIDE_ROOT')
- if not halide_root:
-     halide_root = '..'
--include_path = os.path.join(halide_root, 'include')
--bin_path = os.path.join(halide_root, 'bin', build_prefix)
--bin_path = os.path.abspath(bin_path)
-+include_path = os.path.join(halide_root, build_prefix, 'include')
-+bin_path = os.path.abspath(os.path.join(halide_root, build_prefix, 'bin'))
-+lib_path = os.path.abspath(os.path.join(halide_root, build_prefix, 'lib'))
- image_path = os.path.join(halide_root, 'apps', 'images')
- 
- png_cflags  = subprocess.check_output('libpng-config --cflags',  shell=True).strip().decode()
- png_ldflags = subprocess.check_output('libpng-config --ldflags', shell=True).strip().decode()
- 
--ext_modules = [Extension("halide/_cHalide", ["halide/cHalide_wrap.cxx", 'halide/py_util.cpp'],
--                         include_dirs=[include_path],
--                         extra_compile_args=('-ffast-math -O3 -msse -Wl,-dead_strip -fno-common' + ' ' + png_cflags).split() + ['-Wl,-rpath=%s' % bin_path],
--                         extra_link_args=[os.path.join(bin_path, 'libHalide.so'),
--                                          '-Wl,-rpath=%s' % bin_path,
--                                          '-ltinfo', '-lpthread',
--                                          '-ldl', '-lstdc++', '-lc'] + png_ldflags.split(),
--                         language='c++')]
--
-+ext_modules = [Extension("halide/_cHalide",
-+    ["halide/cHalide_wrap.cxx", 'halide/py_util.cpp'],
-+        include_dirs=[include_path],
-+        extra_compile_args=(
-+            '-ffast-math -O3 -msse -std=c++11 -stdlib=libc++ -fno-common' + ' ' + png_cflags).split(),
-+        extra_link_args=[os.path.join(lib_path, 'libHalide.dylib'),
-+            '-lncurses', '-lpthread',
-+            '-ldl', '-lc++', '-lc'] + png_ldflags.split(),
-+        language='c++')]
-+        
- if glob.glob('halide/data/*.png') == []:
-     shutil.copytree(image_path, 'halide/data')
-     
-@@ -41,9 +41,7 @@ setup(
-     classifiers=[
-         "Topic :: Multimedia :: Graphics",
-         "Programming Language :: Python :: 2.7"],
--    packages=['halide'],
--    package_dir={'halide': 'halide'},
--    package_data={'halide': ['data/*.png']},
--    ext_modules = ext_modules
--)
--
-+        packages=['halide'],
-+        package_dir={'halide': 'halide'},
-+        package_data={'halide': ['data/*.png']},
-+    ext_modules = ext_modules)
-\ No newline at end of file
