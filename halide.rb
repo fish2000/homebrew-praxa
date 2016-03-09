@@ -22,15 +22,15 @@ class Halide < Formula
   option "without-extras", "Skip building tests, apps, and tutorial code"
   option "without-generator-tests", "Skip generator tests (see http://git.io/vvtMD)"
   
-  depends_on "cmake"  => :build
-  depends_on "llvm"   => :build
-  depends_on :python3 => :recommended
-  depends_on "libpng"             if build.with? :python3
-  # depends_on "numpy"  => :python3 if build.with? :python3
-  # depends_on "PIL"    => :python3 if build.with? :python3
+  depends_on "cmake" => :build
+  depends_on "llvm"  => :build
+  depends_on :python => :recommended
+  depends_on "libpng"             if build.with? :python
+  depends_on "numpy"  => :python  if build.with? :python
+  depends_on "Pillow" => :python  if build.with? :python
   depends_on :x11
   
-  patch :DATA if (build.with? :python3 and not build.head?)
+  # patch :DATA if (build.with? :python and not build.head?)
   
   def install
     # Use brewed clang
@@ -106,17 +106,20 @@ class Halide < Formula
     end
     
     # Build python bindings
-    if build.with? :python3
+    if build.with? :python
       cd "python_bindings" do
         # Set things up
-        ENV.prepend_create_path "PYTHONPATH", lib/"python3.5/site-packages"
+        ENV.prepend_create_path "PYTHONPATH", lib/"python2.7/site-packages"
         ENV['HALIDE_ROOT'] = buildpath
         ENV['HALIDE_BUILD_PATH'] = buildpath/"build-static"
         
         # Build and install
         # system "python", "setup.py", "build_ext"
         # system "python", "setup.py", "install", "--prefix=#{prefix}"
-        pcargs = std_cmake_args
+        pcargs = std_cmake_args + %W[
+          -DUSE_PYTHON=2
+          -DCMAKE_CXX_FLAGS="-Wno-unknown-pragmas -Wno-deprecated -Wno-deprecated-declarations -Wno-#warnings -Wno-#pragma-messages"
+        ]
         pcargs.keep_if { |v| v !~ /DCMAKE_VERBOSE_MAKEFILE/ }
         
         mkdir "build" do
