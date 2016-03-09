@@ -1,9 +1,19 @@
 
 class Llvmlite < Formula
   homepage "https://github.com/numba/llvmlite"
-  url "https://github.com/numba/llvmlite.git", :using => :git
-  version "0.1.0"
+  head "https://github.com/numba/llvmlite.git",
+       :using => :git
 
+  url "https://github.com/numba/llvmlite/archive/v0.9.0.tar.gz"
+  sha1 "128743a70c0511ab95bf2af95c5067a337247b86"
+  version "0.9.0"
+  
+  devel do
+    url "https://github.com/numba/llvmlite/archive/v0.10.0.dev.tar.gz"
+    sha1 "23ed1458ec48319beaaa73a23eac1c06d1c321d4"
+    version "0.10.0.dev"
+  end
+  
   depends_on "cmake" => :build
   depends_on "llvm" => :build
   depends_on :python
