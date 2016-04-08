@@ -43,7 +43,7 @@ class Halide < Formula
     # to just "MAJORMINOR" e.g. "3.8.0svn" becomes "38"
     # ... as this format is expected by Halide's CMakeLists.txt
     llvm_version = %x[#{ENV['LLVM_CONFIG']} --version]
-    llvm_version_short = llvm_version.gsub(/.(\w+)$/, "").gsub(/[.\n\s]+/m, "")
+    llvm_version_short = llvm_version.gsub(/\.(\w+)$/, "").gsub(/[\.\n\s]+/m, "")
     
     # Extend cmake args
     cargs = std_cmake_args + %W[
