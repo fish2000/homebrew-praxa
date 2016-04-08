@@ -1,5 +1,6 @@
 
 class Halide < Formula
+  desc "The Halide image-processing LLVM frontend"
   homepage "http://halide-lang.org/"
   head "https://github.com/halide/Halide.git"
   url "https://github.com/halide/Halide/archive/release_2015_12_17.tar.gz"
@@ -27,7 +28,7 @@ class Halide < Formula
   depends_on :python => :recommended
   depends_on "libpng"             if build.with? :python
   depends_on "numpy"  => :python  if build.with? :python
-  depends_on "Pillow" => :python  if build.with? :python
+  # depends_on "Pillow" => :python  if build.with? :python
   depends_on :x11
   
   # patch :DATA if (build.with? :python and not build.head?)
