@@ -28,10 +28,7 @@ class Halide < Formula
   depends_on :python => :recommended
   depends_on "libpng"             if build.with? :python
   depends_on "numpy"  => :python  if build.with? :python
-  # depends_on "Pillow" => :python  if build.with? :python
   depends_on :x11
-  
-  # patch :DATA if (build.with? :python and not build.head?)
   
   def install
     # Use brewed clang
@@ -91,7 +88,7 @@ class Halide < Formula
     end
     
     # build the library
-    ohai "NOTE: There will likely be a long wait after executing cmake"
+    ohai "Building as a dynamic library (1 of 2)"
     mkdir "build-dynamic" do
       system "cmake", "..", *dargs
       system "make"
@@ -101,6 +98,7 @@ class Halide < Formula
       inreplace "CMakeLists.txt", "add_subdirectory(apps)", ""
       inreplace "CMakeLists.txt", "add_subdirectory(tutorial)", ""
     end
+    ohai "Building as a static library (2 of 2)"
     mkdir "build-static" do
       system "cmake", "..", *sargs
       system "make"
@@ -114,9 +112,7 @@ class Halide < Formula
         ENV['HALIDE_ROOT'] = buildpath
         ENV['HALIDE_BUILD_PATH'] = buildpath/"build-static"
         
-        # Build and install
-        # system "python", "setup.py", "build_ext"
-        # system "python", "setup.py", "install", "--prefix=#{prefix}"
+        # TODO: not half-ass this
         pcargs = std_cmake_args + %W[
           -DUSE_PYTHON=2
           -DCMAKE_CXX_FLAGS="-Wno-unknown-pragmas -Wno-deprecated -Wno-deprecated-declarations -Wno-#warnings -Wno-#pragma-messages"
