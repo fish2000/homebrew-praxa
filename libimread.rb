@@ -4,9 +4,11 @@ class Libimread < Formula
   url "https://github.com/fish2000/libimread.git", :using => :git
   version "0.2.0"
   
-  option "skip-tests",
+  option "without-tests",
          "Skip running tests"
-  option "run-extra-tests",
+  option "without-apps",
+         "Skip building companion apps"
+  option "with-extra-tests",
        %s[Run an extra test phase and post results to the project CDash:
              http://my.cdash.org/index.php?project=libimread]
   option "with-brewed-clang",
@@ -36,10 +38,19 @@ class Libimread < Formula
     cargs = std_cmake_args
     cargs.keep_if { |v| v !~ /DCMAKE_VERBOSE_MAKEFILE/ }
     
+    if build.without? "tests"
+      cargs << "-DIM_TESTS=OFF"
+    end
+    if build.without? "apps"
+      cargs << "-DIM_APPS=OFF"
+    end
+    
     mkdir "build" do
       system "cmake", "..", *cargs
       system "make", "install"
-      bin.install "imread_tests"
+      if not build.without? "tests"
+        bin.install "imread_tests"
+      end
     end
     
     if build.with? :python
@@ -56,7 +67,7 @@ class Libimread < Formula
       end
     end
     
-    if build.with? "run-extra-tests"
+    if build.with? "extra-tests"
       cd "build" do
         begin
           system "ctest", "-j4",
@@ -72,7 +83,7 @@ class Libimread < Formula
   
   def test
     
-    if not build.with? "skip-tests"
+    if not build.without? "tests"
       begin
         system bin/"imread_tests", "--success",
                                    "--durations", "yes",

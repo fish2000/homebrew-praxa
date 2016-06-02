@@ -142,6 +142,7 @@ class Halide < Formula
       if not build.without? "extras"
         bin.install "bin/HalideTraceViz"
         (bin/"tests").mkdir
+        (bin/"tests").install     "bin/test_internal"
         (bin/"tests").install Dir["bin/correctness_*"]
         (bin/"tests").install Dir["bin/error_*"]
         (bin/"tests").install Dir["bin/exec_test_*"]
@@ -149,6 +150,7 @@ class Halide < Formula
         (bin/"tests").install Dir["bin/opengl_*"]
         (bin/"tests").install Dir["bin/performance_*"]
         (bin/"tests").install Dir["bin/warning_*"]
+        (bin/"tests").install Dir["bin/*.generator"]
       end
     end
     
