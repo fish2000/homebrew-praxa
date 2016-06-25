@@ -21,9 +21,13 @@ class Vpp < Formula
     # Use brewed Clang
     # ENV['CC'] = Formula['llvm'].opt_prefix/"bin/clang"
     # ENV['CXX'] = Formula['llvm'].opt_prefix/"bin/clang++"
+    ENV.append_to_cflags  "-I#{Formula['eigen'].opt_prefix/"include"}"
+    
+    cargs = std_cmake_args
+    cargs.keep_if { |v| v !~ /DCMAKE_VERBOSE_MAKEFILE/ }
     
     mkdir "build" do
-      system "cmake", "..", *std_cmake_args
+      system "cmake", "..", *cargs
       system "make"
       system "make", "install"
     end
@@ -31,7 +35,7 @@ class Vpp < Formula
     if build.with? "benchmarks"
       cd "benchmarks" do
         mkdir "build" do
-          system "cmake", "..", *std_cmake_args
+          system "cmake", "..", *cargs
           system "make"
         end
       end
@@ -40,7 +44,7 @@ class Vpp < Formula
     if build.with? "examples"
       cd "examples" do
         mkdir "build" do
-          system "cmake", "..", *std_cmake_args
+          system "cmake", "..", *cargs
           system "make"
           system "make", "install"
         end
