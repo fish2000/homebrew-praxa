@@ -16,21 +16,10 @@ class Iod < Formula
     ENV['CC'] = Formula['llvm'].opt_prefix/"bin/clang"
     ENV['CXX'] = Formula['llvm'].opt_prefix/"bin/clang++"
     
-    # inreplace "tools/iod_generate_symbols.cc",
-    #           "std::stringstream symbols_content;", ""
     mkdir "build" do
       system "cmake", "..", *std_cmake_args
       system "make", "install"
     end
-    
-    bin.install "tools/generate_symbol_definitions.sh"
-    
-    # cd "tests" do
-    #   mkdir "build" do
-    #     system "cmake", "..", *std_cmake_args
-    #     system "make", "test"
-    #   end
-    # end
     
   end
 end
