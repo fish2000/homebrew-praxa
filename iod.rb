@@ -9,12 +9,12 @@ class Iod < Formula
   
   depends_on "cmake" => :build
   depends_on "llvm"  => :build
-  depends_on "boost"
+  depends_on "boost" => :build
   
   def install
     # Use brewed clang
-    ENV['CC'] = Formula['llvm'].opt_prefix/"bin/clang"
-    ENV['CXX'] = Formula['llvm'].opt_prefix/"bin/clang++"
+    # ENV['CC'] = Formula['llvm'].opt_prefix/"bin/clang"
+    # ENV['CXX'] = Formula['llvm'].opt_prefix/"bin/clang++"
     
     mkdir "build" do
       system "cmake", "..", *std_cmake_args
