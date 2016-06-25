@@ -10,10 +10,10 @@ class Vpp < Formula
   option "with-benchmarks", "Build and run benchmarks"
   option "with-examples",   "Build and install examples"
   
-  depends_on "cmake" => :build
-  depends_on "llvm"  => :build
-  depends_on "eigen" => :build
-  depends_on "homebrew/science/opencv"
+  depends_on "cmake"                    => :build
+  depends_on "llvm"                     => :build
+  depends_on "eigen"                    => :build
+  depends_on "homebrew/science/opencv3" => :build
   depends_on "fish2000/praxa/iod"
   depends_on "fish2000/praxa/dige"
   
@@ -23,6 +23,7 @@ class Vpp < Formula
     # ENV['CXX'] = Formula['llvm'].opt_prefix/"bin/clang++"
     ENV.append_to_cflags  "-I#{Formula['eigen'].opt_prefix/"include"}"
     ENV.append_to_cflags  "-I#{Formula['eigen'].opt_prefix/"include/eigen3"}"
+    ENV.append_to_cflags  "-I#{Formula['opencv3'].opt_prefix/"include"}"
     
     cargs = std_cmake_args
     cargs.keep_if { |v| v !~ /DCMAKE_VERBOSE_MAKEFILE/ }
