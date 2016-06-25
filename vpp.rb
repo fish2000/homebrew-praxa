@@ -21,7 +21,7 @@ class Vpp < Formula
     # Use brewed Clang
     # ENV['CC'] = Formula['llvm'].opt_prefix/"bin/clang"
     # ENV['CXX'] = Formula['llvm'].opt_prefix/"bin/clang++"
-    ENV.append_to_cflags  "-I#{Formula['eigen'].opt_prefix/"include"}"
+    ENV.append_to_cflags  "-I#{Formula['eigen'].opt_prefix/"include/eigen3"}"
     
     cargs = std_cmake_args
     cargs.keep_if { |v| v !~ /DCMAKE_VERBOSE_MAKEFILE/ }
