@@ -5,14 +5,14 @@ class Vpp < Formula
   url "https://github.com/matt-42/vpp/archive/e03f0dd4d33953c0017b946995960e491a928426.zip"
   head "https://github.com/matt-42/vpp.git",
        :using => :git
-  version "0.3.0"
+  version "0.3.1"
   
   option "with-benchmarks", "Build and run benchmarks"
   option "with-examples",   "Build and install examples"
   
   depends_on "cmake" => :build
   depends_on "llvm"  => :build
-  depends_on "eigen"
+  depends_on "eigen" => :build
   depends_on "homebrew/science/opencv"
   depends_on "fish2000/praxa/iod"
   depends_on "fish2000/praxa/dige"
