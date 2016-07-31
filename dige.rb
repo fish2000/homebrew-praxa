@@ -2,7 +2,7 @@
 class Dige < Formula
   homepage "https://github.com/matt-42/dige"
   url "https://github.com/matt-42/dige/archive/master.zip"
-  sha1 "a6acf5863768e26f900f1dc33194942c5dd37ff1"
+  # sha1 "a6acf5863768e26f900f1dc33194942c5dd37ff1"
   version "0.1.1"
   head "https://github.com/matt-42/dige.git", :using => :git
   

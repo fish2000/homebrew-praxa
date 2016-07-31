@@ -11,7 +11,7 @@ class Olena < Formula
   
   url 'https://www.lrde.epita.fr/dload/olena/2.1/olena-2.1.tar.bz2'
   version "2.1.0"
-  sha1 '54f756b033a45d4c2fe1233c10fc43f99f9f552f'
+  # sha1 '54f756b033a45d4c2fe1233c10fc43f99f9f552f'
   
   option "without-scribo", "Omit building the Scribo header library"
   option "without-cxx11", "Don't enable any standard C++11 build flags"
