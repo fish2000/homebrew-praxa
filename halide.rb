@@ -6,7 +6,7 @@ class Halide < Formula
   url "https://github.com/halide/Halide/archive/release_2015_12_17.tar.gz"
   sha256 "8c9150fb04531fff02ae15138f9365fe2f5aafbf679ed28913d2192794bafb05"
   version "0.15.0"
-  
+
   devel do
     url "https://github.com/halide/Halide/archive/64802d53498c953acb41a31a5bd5ec2bc175cdcb.zip" # busted
     #url "https://github.com/halide/Halide/archive/a6bffdfb9cd143e83ef2e66353b9a29d7ec365ff.zip" # head
@@ -14,22 +14,22 @@ class Halide < Formula
     #url "https://github.com/halide/Halide/archive/a6942340e740b36a2fa85176e963be890cc6abb3.zip" # pretty old
     version "0.15.0"
   end
-  
+
   option "with-metal", "Enable Apple Metal codepaths"
   option "with-opencl", "Enable OpenCL codepaths"
   option "with-opengl", "Enable OpenGL/ES codepaths"
   option "with-opengl-compute", "Enable OpenGL Compute codepaths"
-  
+
   option "without-extras", "Skip building tests, apps, and tutorial code"
   option "without-generator-tests", "Skip generator tests (see http://git.io/vvtMD)"
-  
+
   depends_on "cmake" => :build
   depends_on "llvm"  => :build
   depends_on :python => :recommended
   depends_on "libpng"             if build.with? :python
   depends_on "numpy"  => :python  if build.with? :python
-  depends_on :x11
-  
+  # depends_on :x11
+
   def install
     # Use brewed clang
     llvm = Formula['llvm'].opt_prefix
@@ -38,13 +38,13 @@ class Halide < Formula
     ENV['CXX'] += "++"
     ENV['CXX11'] = "1"
     ENV.cxx11
-    
+
     # Get LLVM version "MAJOR.MINOR.PATCH" and reduce it
     # to just "MAJORMINOR" e.g. "3.8.0svn" becomes "38"
     # ... as this format is expected by Halide's CMakeLists.txt
     llvm_version = %x[#{ENV['LLVM_CONFIG']} --version]
     llvm_version_short = llvm_version.gsub(/\.(\w+)$/, "").gsub(/[\.\n\s]+/m, "")
-    
+
     # Extend cmake args
     cargs = std_cmake_args + %W[
       -DLLVM_BIN=#{llvm/"bin"}
@@ -65,28 +65,28 @@ class Halide < Formula
       -DWITH_APPS=#{build.without? "extras" and "OFF" or "ON"}
       -DWITH_UTILS=#{build.without? "extras" and "OFF" or "ON"}
     ]
-    
+
     cargs.keep_if { |v| v !~ /DCMAKE_VERBOSE_MAKEFILE/ }
-    
+
     sargs = cargs + %W[
       -DHALIDE_SHARED_LIBRARY=OFF
     ]
-    
+
     dargs = cargs + %W[
       -DHALIDE_SHARED_LIBRARY=ON
     ]
-    
+
     if build.without? "extras"
       inreplace "CMakeLists.txt", "add_subdirectory(test)", ""
       inreplace "CMakeLists.txt", "add_subdirectory(apps)", ""
       inreplace "CMakeLists.txt", "add_subdirectory(tutorial)", ""
     end
-    
+
     if build.without? "generator-tests"
       sargs << "-DWITH_TEST_GENERATORS=OFF"
       dargs << "-DWITH_TEST_GENERATORS=OFF"
     end
-    
+
     # build the library
     ohai "Building as a dynamic library (1 of 2)"
     mkdir "build-dynamic" do
@@ -103,7 +103,7 @@ class Halide < Formula
       system "cmake", "..", *sargs
       system "make"
     end
-    
+
     # Build python bindings
     if build.with? :python
       cd "python_bindings" do
@@ -111,22 +111,22 @@ class Halide < Formula
         ENV.prepend_create_path "PYTHONPATH", lib/"python2.7/site-packages"
         ENV['HALIDE_ROOT'] = buildpath
         ENV['HALIDE_BUILD_PATH'] = buildpath/"build-static"
-        
+
         # TODO: not half-ass this
         pcargs = std_cmake_args + %W[
           -DUSE_PYTHON=2
           -DCMAKE_CXX_FLAGS="-Wno-unknown-pragmas -Wno-deprecated -Wno-deprecated-declarations -Wno-#warnings -Wno-#pragma-messages"
         ]
         pcargs.keep_if { |v| v !~ /DCMAKE_VERBOSE_MAKEFILE/ }
-        
+
         mkdir "build" do
           system "cmake", "..", *pcargs
           system "make"
         end
-        
+
       end
     end
-    
+
     # There is no "make install" target, for some reason --
     # hence this DIY stuff here
     cd "build-static" do
@@ -139,6 +139,7 @@ class Halide < Formula
       bin.mkdir
       bin.install "bin/bitcode2cpp"
       bin.install "bin/build_halide_h"
+      bin.install "bin/runtime.generator"
       if not build.without? "extras"
         bin.install "bin/HalideTraceViz"
         (bin/"tests").mkdir
@@ -153,7 +154,7 @@ class Halide < Formula
         (bin/"tests").install Dir["bin/*.generator"]
       end
     end
-    
+
   end
 
   test do
