@@ -23,7 +23,7 @@ class Libimread < Formula
   depends_on "libpng"
   depends_on "libtiff"
   depends_on "webp"
-  depends_on "zlib"
+  # depends_on "zlib"
   depends_on "capnp"
   cxxstdlib_check :skip
   
