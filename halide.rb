@@ -137,8 +137,8 @@ class Halide < Formula
       include.mkdir
       include.install Dir["include/*"]
       bin.mkdir
-      bin.install "bin/bitcode2cpp"
-      bin.install "bin/build_halide_h"
+      #bin.install "bin/bitcode2cpp"
+      #bin.install "bin/build_halide_h"
       bin.install "bin/runtime.generator"
       if not build.without? "extras"
         bin.install "bin/HalideTraceViz"
