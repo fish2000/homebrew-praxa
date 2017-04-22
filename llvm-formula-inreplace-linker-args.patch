@@ -1,0 +1,76 @@
+From 0e83d56c82700c498a1be907625768f6fa5a3405 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Alexander=20B=C3=B6hn?= <fish2000@gmail.com>
+Date: Fri, 21 Apr 2017 23:24:50 -0400
+Subject: [PATCH] =?UTF-8?q?Patch=20llvm.rb=20with=20=E2=80=9CFormula::inre?=
+ =?UTF-8?q?place=E2=80=9D=20...=20or=20should=20that=20be=20=E2=80=9CFormu?=
+ =?UTF-8?q?la#inreplace=E2=80=9D=3F=3F=20I=20really=20don=E2=80=99t=20know?=
+ =?UTF-8?q?,=20=20=20=20=20I=20am=20the=20opposite=20of=20a=20Rubyist=20re?=
+ =?UTF-8?q?ally=20--=20I=20would=20rather=20do=20=20=20=20=20SFINAE,=20CRT?=
+ =?UTF-8?q?P=20and=20RAII=20all=20day=20long,=20in=20leu=20of=20having=20t?=
+ =?UTF-8?q?o=20type=20=20=20=20=20=E2=80=9Cend=E2=80=9D=20over=20and=20ove?=
+ =?UTF-8?q?r=20throughout=20endless=20Procs=20and/or=20blocks=20...=20alth?=
+ =?UTF-8?q?ough=20to=20be=20fair=20I=20don=E2=80=99t=20mind=20the=20specif?=
+ =?UTF-8?q?ically-odd=20iterator=20=20=20=20=20syntax=20in=20Ruby=20and=20?=
+ =?UTF-8?q?I=20quite=20like=20the=20whole=20thing=20with=20the=20symbols,?=
+ =?UTF-8?q?=20=20=20=20=20yes=20--=20but=20no.=20I=20remember=20when=20I?=
+ =?UTF-8?q?=20heard=20how=20there=20are=20no=20metaclasses=20=20=20=20=20i?=
+ =?UTF-8?q?n=20Ruby=20per=20se=20and=20that=20one=20has=20to=20monkeypatch?=
+ =?UTF-8?q?=20the=20Module=20class=20=20=20=20=20to=20acheive=20the=20same?=
+ =?UTF-8?q?=20effect:=20I=20made=20a=20fart/poop=20noise=20with=20my=20=20?=
+ =?UTF-8?q?=20=20=20mouth=20while=20simultaneously=20giving=20the=20thumbs?=
+ =?UTF-8?q?-down=20gesture.=20...=20I=20will=20revisit=20this=20when=20Rub?=
+ =?UTF-8?q?y=20has=20a=20for-real=20NumPy=20analogue,=20=20=20=20=20a=20re?=
+ =?UTF-8?q?-architected=20method=20dispatch=20implementation=20(ideally=20?=
+ =?UTF-8?q?in=20C++),=20=20=20=20=20some=20syntax=20sugar=20in=20the=20int?=
+ =?UTF-8?q?ernals=20so=20they=20aren=E2=80=99t=20CONSTANTLY=20=20=20=20=20?=
+ =?UTF-8?q?SCREAMING=20THE=20WORD=20=E2=80=9CVALUE=E2=80=9D=20ALL=20THE=20?=
+ =?UTF-8?q?TIME=20AT=20EVERYONE,=20and=20like=20=20=20=20=20an=20=E2=80=9C?=
+ =?UTF-8?q?Post-Python=20OCD=20mode=E2=80=9D=20flag=20for=20the=20parser?=
+ =?UTF-8?q?=20that=20lets=20you=20=20=20=20=20forgo=20all=20the=20?=
+ =?UTF-8?q?=E2=80=9Cend=E2=80=9Ds=20and=20use=20the=20fanatical=20entabula?=
+ =?UTF-8?q?tion=20reflex=20=20=20=20=20you=E2=80=99re=20stuck=20with=20aft?=
+ =?UTF-8?q?er=20years=20and=20years=20under=20the=20Lord=20GvR=E2=80=99s?=
+ =?UTF-8?q?=20=20=20=20=20whitespace-wildling=20regime.=20OK=3F=20I=20thin?=
+ =?UTF-8?q?k=20OK.?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ Formula/llvm.rb | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/Formula/llvm.rb b/Formula/llvm.rb
+index 14685e52..bece24eb 100644
+--- a/Formula/llvm.rb
++++ b/Formula/llvm.rb
+@@ -164,6 +164,11 @@ class Llvm < Formula
+   end
+ 
+   def install
++    if build.head?
++      inreplace "cmake/modules/HandleLLVMOptions.cmake",
++        "set(LLVM_HAVE_LINK_VERSION_SCRIPT 1)",
++        "set(LLVM_HAVE_LINK_VERSION_SCRIPT 0)"
++    end
+     # Apple's libstdc++ is too old to build LLVM
+     ENV.libcxx if ENV.compiler == :clang
+ 
+@@ -174,7 +179,13 @@ class Llvm < Formula
+     (buildpath/"projects/libunwind").install resource("libunwind")
+     (buildpath/"tools/lld").install resource("lld")
+     (buildpath/"tools/polly").install resource("polly")
+-
++    
++    if build.head?
++      inreplace "projects/openmp/libomptarget/CMakeLists.txt",
++        "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/exports",
++        "-Wl,-undefined,dynamic_lookup"
++    end
++    
+     if build.with? "lldb"
+       if build.with? "python"
+         pyhome = `python-config --prefix`.chomp
+-- 
+2.12.2
+
