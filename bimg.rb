@@ -34,7 +34,8 @@ class Bimg < Formula
     cp artifacts/"libbimgRelease.a",        lib/"libbimg.a"
     cp artifacts/"libbimg_decodeRelease.a", lib/"libbimg_decode.a"
     cp artifacts/"libbimg_encodeRelease.a", lib/"libbimg_encode.a"
-    cp artifacts/"libbxRelease.a",          lib/"libbx.a"
+    
+    cp artifacts/"libbxRelease.a",          lib/"libbxRelease.a"
     
     cp artifacts/"texturecDebug",           bin/"texturecDebug"
     cp artifacts/"texturecRelease",         bin/"texturec"
