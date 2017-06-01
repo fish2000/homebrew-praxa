@@ -29,7 +29,6 @@ class Bx < Formula
     # Copy build artifacts
     artifacts = buildpath/".build/osx64_clang/bin/"
     cp artifacts/"bin2cRelease",    bin/"bin2c"
-    cp artifacts/"libbxRelease.a",  lib/"libbxRelease.a"
     cp artifacts/"libbxRelease.a",  lib/"libbx.a"
   end
 end
