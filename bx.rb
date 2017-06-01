@@ -18,13 +18,13 @@ class Bx < Formula
     (include/"compat").mkdir
     (include/"tinystl").mkdir
     
-    # Copy include files
+    # Build project
+    system "gmake", "test", "tools"
+    
+    # Install include files
     (include/"bx").install      Dir["include/bx/*"]
     (include/"compat").install  Dir["include/compat/*"]
     (include/"tinystl").install Dir["include/tinystl/*"]
-    
-    # Build project
-    system "gmake", "test", "tools"
     
     # Copy build artifacts
     artifacts = buildpath/".build/osx64_clang/bin/"
