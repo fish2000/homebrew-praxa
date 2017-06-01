@@ -4,7 +4,6 @@ class Bx < Formula
   head "https://github.com/bkaradzic/bx.git", :using => :git
   
   depends_on "make" => :build
-  depends_on "lua"  => :build
   
   def install
     # Deparallelize

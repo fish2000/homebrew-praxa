@@ -5,7 +5,6 @@ class Bimg < Formula
   
   depends_on "fish2000/praxa/bx"
   depends_on "make" => :build
-  depends_on "lua"  => :build
   
   def install
     # Deparallelize
