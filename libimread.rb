@@ -34,7 +34,7 @@ class Libimread < Formula
       ENV['CXX'] = Formula['llvm'].opt_prefix/"bin/clang++"
     end
     
-    ENV.append 'CXXFLAGS', "-std=c++17"
+    ENV.append 'CXXFLAGS', "-std=c++1z"
     ENV.append 'CXXFLAGS', "-stdlib=libc++"
     
     cargs = std_cmake_args
