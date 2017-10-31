@@ -36,9 +36,14 @@ class Halide < Formula
     ENV['LLVM_CONFIG'] = llvm/"bin/llvm-config"
     ENV['CC'] = ENV['CLANG'] = ENV['CXX'] = llvm/"bin/clang"
     ENV['CXX'] += "++"
-    ENV['CXX11'] = "1"
-    ENV.cxx11
-
+    # ENV['CXX11'] = "1"
+    # ENV.cxx11
+    
+    ENV.append_to_cflags  "-std=c++17"
+    ENV.append_to_cflags  "-stdlib=libc++"
+    # ENV.append 'LDFLAGS', "-stdlib=libc++"
+    # ENV.append 'LDFLAGS', "-lc++"
+    
     # Get LLVM version "MAJOR.MINOR.PATCH" and reduce it
     # to just "MAJORMINOR" e.g. "3.8.0svn" becomes "38"
     # ... as this format is expected by Halide's CMakeLists.txt
@@ -47,9 +52,6 @@ class Halide < Formula
 
     # Extend cmake args
     cargs = std_cmake_args + %W[
-      -DLLVM_BIN=#{llvm/"bin"}
-      -DLLVM_INCLUDE=#{llvm/"include"}
-      -DLLVM_LIB=#{llvm/"lib"}
       -DLLVM_VERSION=#{llvm_version_short}
       -DTARGET_NATIVE_CLIENT=OFF
       -DTARGET_AARCH64=ON
