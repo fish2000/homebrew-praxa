@@ -125,7 +125,7 @@ class Halide < Formula
         
       end
     end
-
+    
     # There is no "make install" target, for some reason --
     # hence this DIY stuff here
     cd "build-static" do
@@ -138,12 +138,11 @@ class Halide < Formula
       bin.mkdir
       bin.install "bin/binary2cpp"
       bin.install "bin/build_halide_h"
-      # bin.install "bin/runtime.generator"
       if not build.without? "extras"
         bin.install "bin/HalideTraceViz"
         bin.install "bin/HalideTraceDump"
         (bin/"tests").mkdir
-        (bin/"tests").install     "bin/test_internal"
+        # (bin/"tests").install     "bin/test_internal"
         (bin/"tests").install Dir["bin/correctness_*"]
         (bin/"tests").install Dir["bin/error_*"]
         (bin/"tests").install Dir["bin/exec_test_*"]
