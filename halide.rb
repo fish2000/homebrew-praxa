@@ -28,7 +28,6 @@ class Halide < Formula
   depends_on :python => :recommended
   depends_on "libpng"             if build.with? :python
   depends_on "numpy"  => :python  if build.with? :python
-  # depends_on :x11
 
   def install
     # Use brewed clang
@@ -36,28 +35,26 @@ class Halide < Formula
     ENV['LLVM_CONFIG'] = llvm/"bin/llvm-config"
     ENV['CC'] = ENV['CLANG'] = ENV['CXX'] = llvm/"bin/clang"
     ENV['CXX'] += "++"
-    # ENV['CXX11'] = "1"
-    # ENV.cxx11
-    
     ENV.append 'CXXFLAGS', "-std=c++17"
     ENV.append 'CXXFLAGS', "-stdlib=libc++"
-    # ENV.append 'LDFLAGS', "-stdlib=libc++"
-    # ENV.append 'LDFLAGS', "-lc++"
     
     # Get LLVM version "MAJOR.MINOR.PATCH" and reduce it
     # to just "MAJORMINOR" e.g. "3.8.0svn" becomes "38"
     # ... as this format is expected by Halide's CMakeLists.txt
     llvm_version = %x[#{ENV['LLVM_CONFIG']} --version]
     llvm_version_short = llvm_version.gsub(/\.(\w+)$/, "").gsub(/[\.\n\s]+/m, "")
-
+    
     # Extend cmake args
     cargs = std_cmake_args + %W[
       -DLLVM_VERSION=#{llvm_version_short}
       -DTARGET_NATIVE_CLIENT=OFF
-      -DTARGET_AARCH64=ON
+      -DTARGET_X86=ON
       -DTARGET_ARM=ON
+      -DTARGET_AARCH64=ON
+      -DTARGET_HEXAGON=ON
       -DTARGET_METAL=#{build.with? "metal" and "ON" or "OFF"}
       -DTARGET_MIPS=ON
+      -DTARGET_POWERPC=ON
       -DTARGET_PTX=ON
       -DTARGET_X86=ON
       -DTARGET_OPENCL=#{build.with? "opencl" and "ON" or "OFF"}
@@ -67,28 +64,28 @@ class Halide < Formula
       -DWITH_APPS=#{build.without? "extras" and "OFF" or "ON"}
       -DWITH_UTILS=#{build.without? "extras" and "OFF" or "ON"}
     ]
-
+    
     cargs.keep_if { |v| v !~ /DCMAKE_VERBOSE_MAKEFILE/ }
-
+    
     sargs = cargs + %W[
       -DHALIDE_SHARED_LIBRARY=OFF
     ]
-
+    
     dargs = cargs + %W[
       -DHALIDE_SHARED_LIBRARY=ON
     ]
-
+    
     if build.without? "extras"
       inreplace "CMakeLists.txt", "add_subdirectory(test)", ""
       inreplace "CMakeLists.txt", "add_subdirectory(apps)", ""
       inreplace "CMakeLists.txt", "add_subdirectory(tutorial)", ""
     end
-
+    
     if build.without? "generator-tests"
       sargs << "-DWITH_TEST_GENERATORS=OFF"
       dargs << "-DWITH_TEST_GENERATORS=OFF"
     end
-
+    
     # build the library
     ohai "Building as a dynamic library (1 of 2)"
     mkdir "build-dynamic" do
@@ -105,7 +102,7 @@ class Halide < Formula
       system "cmake", "..", *sargs
       system "make"
     end
-
+    
     # Build python bindings
     if build.with? :python
       cd "python_bindings" do
@@ -113,19 +110,19 @@ class Halide < Formula
         ENV.prepend_create_path "PYTHONPATH", lib/"python2.7/site-packages"
         ENV['HALIDE_ROOT'] = buildpath
         ENV['HALIDE_BUILD_PATH'] = buildpath/"build-static"
-
+        
         # TODO: not half-ass this
         pcargs = std_cmake_args + %W[
           -DUSE_PYTHON=2
           -DCMAKE_CXX_FLAGS="-Wno-unknown-pragmas -Wno-deprecated -Wno-deprecated-declarations -Wno-#warnings -Wno-#pragma-messages"
         ]
         pcargs.keep_if { |v| v !~ /DCMAKE_VERBOSE_MAKEFILE/ }
-
+        
         mkdir "build" do
           system "cmake", "..", *pcargs
           system "make"
         end
-
+        
       end
     end
 
@@ -139,11 +136,12 @@ class Halide < Formula
       include.mkdir
       include.install Dir["include/*"]
       bin.mkdir
-      #bin.install "bin/bitcode2cpp"
-      #bin.install "bin/build_halide_h"
-      bin.install "bin/runtime.generator"
+      bin.install "bin/binary2cpp"
+      bin.install "bin/build_halide_h"
+      # bin.install "bin/runtime.generator"
       if not build.without? "extras"
         bin.install "bin/HalideTraceViz"
+        bin.install "bin/HalideTraceDump"
         (bin/"tests").mkdir
         (bin/"tests").install     "bin/test_internal"
         (bin/"tests").install Dir["bin/correctness_*"]
@@ -154,6 +152,7 @@ class Halide < Formula
         (bin/"tests").install Dir["bin/performance_*"]
         (bin/"tests").install Dir["bin/warning_*"]
         (bin/"tests").install Dir["bin/*.generator"]
+        (bin/"tests").install Dir["bin/*.generator_binary"]
       end
     end
 
