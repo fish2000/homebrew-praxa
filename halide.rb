@@ -2,7 +2,7 @@
 class Halide < Formula
   desc "The Halide image-processing LLVM frontend"
   homepage "http://halide-lang.org/"
-  head "https://github.com/halide/Halide.git"
+  head "https://github.com/fish2000/Halide.git"
   url "https://github.com/halide/Halide/archive/release_2015_12_17.tar.gz"
   sha256 "8c9150fb04531fff02ae15138f9365fe2f5aafbf679ed28913d2192794bafb05"
   version "0.15.0"
