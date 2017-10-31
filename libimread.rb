@@ -24,7 +24,6 @@ class Libimread < Formula
   depends_on "libtiff"
   depends_on "webp"
   # depends_on "zlib"
-  depends_on "capnp"
   cxxstdlib_check :skip
   
   def install
@@ -34,7 +33,9 @@ class Libimread < Formula
       ENV['CC'] = Formula['llvm'].opt_prefix/"bin/clang"
       ENV['CXX'] = Formula['llvm'].opt_prefix/"bin/clang++"
     end
-    # ENV.cxx11
+    
+    ENV.append 'CXXFLAGS', "-std=c++17"
+    ENV.append 'CXXFLAGS', "-stdlib=libc++"
     
     cargs = std_cmake_args
     cargs.keep_if { |v| v !~ /DCMAKE_VERBOSE_MAKEFILE/ }
