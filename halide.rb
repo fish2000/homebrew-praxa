@@ -39,8 +39,8 @@ class Halide < Formula
     # ENV['CXX11'] = "1"
     # ENV.cxx11
     
-    ENV.append_to_cflags  "-std=c++17"
-    ENV.append_to_cflags  "-stdlib=libc++"
+    ENV.append 'CXXFLAGS', "-std=c++17"
+    ENV.append 'CXXFLAGS', "-stdlib=libc++"
     # ENV.append 'LDFLAGS', "-stdlib=libc++"
     # ENV.append 'LDFLAGS', "-lc++"
     
