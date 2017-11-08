@@ -40,11 +40,17 @@ class Libimread < Formula
     cargs = std_cmake_args
     cargs.keep_if { |v| v !~ /DCMAKE_VERBOSE_MAKEFILE/ }
     
-    if build.without? "tests"
-      cargs << "-DIM_TESTS=OFF"
-    end
     if build.without? "apps"
       cargs << "-DIM_APPS=OFF"
+    end
+    
+    cargs << "-DIM_COLOR_TRACE=ON"
+    cargs << "-DIM_COVERAGE=OFF"
+    cargs << "-DIM_TERMINATOR=ON"
+    cargs << "-DIM_VERBOSE=ON"
+    
+    if build.without? "tests"
+      cargs << "-DIM_TESTS=OFF"
     end
     
     mkdir "build" do
@@ -72,7 +78,7 @@ class Libimread < Formula
     if build.with? "extra-tests"
       cd "build" do
         begin
-          system "ctest", "-j4",
+          system "ctest", "-j8",
                           "-D", "Experimental",
                           "--output-on-failure"
         rescue BuildError
