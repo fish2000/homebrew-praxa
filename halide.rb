@@ -21,14 +21,17 @@ class Halide < Formula
   option "with-opengl", "Enable OpenGL/ES codepaths"
   option "with-opengl-compute", "Enable OpenGL Compute codepaths"
 
-  option "without-extras", "Skip building tests, apps, and tutorial code"
+  option "without-extras", "Skip building tests, apps, docs, and tutorials"
   option "without-generator-tests", "Skip generator tests (see http://git.io/vvtMD)"
 
-  depends_on "cmake" => :build
-  depends_on "llvm"  => :build
-  depends_on :python => :recommended
-  depends_on "libpng"             if build.with? :python
-  depends_on "numpy"  => :python  if build.with? :python
+  depends_on "cmake"    => :build
+  depends_on "llvm"     => :build
+  depends_on "doxygen"  => :build   if not build.without? "extras"
+  depends_on :python    => :recommended
+  depends_on "openblas" => :recommended
+  
+  depends_on "libpng"               if build.with? :python
+  depends_on "numpy"    => :python  if build.with? :python
 
   def install
     # Use brewed clang
@@ -36,7 +39,7 @@ class Halide < Formula
     ENV['LLVM_CONFIG'] = llvm/"bin/llvm-config"
     ENV['CC'] = ENV['CLANG'] = ENV['CXX'] = llvm/"bin/clang"
     ENV['CXX'] += "++"
-    ENV.append 'CXXFLAGS', "-std=c++17"
+    ENV.append 'CXXFLAGS', "-std=c++11"
     ENV.append 'CXXFLAGS', "-stdlib=libc++"
     
     # Get LLVM version "MAJOR.MINOR.PATCH" and reduce it
@@ -49,31 +52,35 @@ class Halide < Formula
     cargs = std_cmake_args + %W[
       -DLLVM_VERSION=#{llvm_version_short}
       -DTARGET_NATIVE_CLIENT=OFF
-      -DTARGET_X86=ON
       -DTARGET_ARM=ON
       -DTARGET_AARCH64=ON
       -DTARGET_HEXAGON=ON
       -DTARGET_METAL=#{build.with? "metal" and "ON" or "OFF"}
       -DTARGET_MIPS=ON
-      -DTARGET_POWERPC=ON
-      -DTARGET_PTX=ON
-      -DTARGET_X86=ON
       -DTARGET_OPENCL=#{build.with? "opencl" and "ON" or "OFF"}
       -DTARGET_OPENGL=#{build.with? "opengl" and "ON" or "OFF"}
       -DTARGET_OPENGLCOMPUTE=#{build.with? "opengl-compute" and "ON" or "OFF"}
-      -DWITH_TUTORIALS=#{build.without? "extras" and "OFF" or "ON"}
-      -DWITH_APPS=#{build.without? "extras" and "OFF" or "ON"}
-      -DWITH_UTILS=#{build.without? "extras" and "OFF" or "ON"}
+      -DTARGET_POWERPC=ON
+      -DTARGET_PTX=ON
+      -DTARGET_X86=ON
     ]
     
     cargs.keep_if { |v| v !~ /DCMAKE_VERBOSE_MAKEFILE/ }
     
     sargs = cargs + %W[
       -DHALIDE_SHARED_LIBRARY=OFF
+      -DWITH_APPS=OFF
+      -DWITH_DOCS=OFF
+      -DWITH_TUTORIALS=OFF
+      -DWITH_UTILS=OFF
     ]
     
     dargs = cargs + %W[
       -DHALIDE_SHARED_LIBRARY=ON
+      -DWITH_APPS=#{build.without? "extras" and "OFF" or "ON"}
+      -DWITH_DOCS=#{build.without? "extras" and "OFF" or "ON"}
+      -DWITH_TUTORIALS=#{build.without? "extras" and "OFF" or "ON"}
+      -DWITH_UTILS=#{build.without? "extras" and "OFF" or "ON"}
     ]
     
     if build.without? "extras"
@@ -87,17 +94,31 @@ class Halide < Formula
       dargs << "-DWITH_TEST_GENERATORS=OFF"
     end
     
-    # build the library
+    if build.with? "openblas"
+      openblas = Formula['openblas'].opt_prefix
+      cd "apps/linear_algebra" do
+        inreplace "CMakeLists.txt", "/usr/local/include/atlas",
+                                      openblas/"include"
+      end
+    end
+    
+    # build the library: DYNAMIC
     ohai "Building as a dynamic library (1 of 2)"
     mkdir "build-dynamic" do
       system "cmake", "..", *dargs
       system "make"
+      if not build.without? "extras"
+        system "make doc"
+      end
     end
+    
     if not build.without? "extras"
       inreplace "CMakeLists.txt", "add_subdirectory(test)", ""
       inreplace "CMakeLists.txt", "add_subdirectory(apps)", ""
       inreplace "CMakeLists.txt", "add_subdirectory(tutorial)", ""
     end
+    
+    # build the library: STATIC
     ohai "Building as a static library (2 of 2)"
     mkdir "build-static" do
       system "cmake", "..", *sargs
@@ -153,6 +174,10 @@ class Halide < Formula
         (bin/"tests").install Dir["bin/warning_*"]
         (bin/"tests").install Dir["bin/*.generator"]
         (bin/"tests").install Dir["bin/*.generator_binary"]
+        share.mkdir
+        (share/"doc").mkdir
+        doc.mkdir
+        doc.install Dir["doc/*"]
       end
     end
 
