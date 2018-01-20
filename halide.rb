@@ -27,7 +27,7 @@ class Halide < Formula
   depends_on "cmake"    => :build
   depends_on "llvm"     => :build
   depends_on "doxygen"  => :build   if not build.without? "extras"
-  depends_on :python    => :recommended
+  depends_on "python"   => :recommended
   depends_on "openblas" => :recommended
   
   depends_on "libpng"               if build.with? :python
