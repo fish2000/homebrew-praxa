@@ -30,8 +30,8 @@ class Halide < Formula
   depends_on "python"   => :recommended
   depends_on "openblas" => :recommended
   
-  depends_on "libpng"               if build.with? :python
-  depends_on "numpy"    => :python  if build.with? :python
+  depends_on "libpng"               if build.with? "python"
+  depends_on "numpy"    => "python" if build.with? "python"
 
   def install
     # Use brewed clang
