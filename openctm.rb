@@ -1,7 +1,7 @@
 
 class Openctm < Formula
   homepage "http://openctm.sourceforge.net/"
-  url "http://softlayer-dal.dl.sourceforge.net/project/openctm/OpenCTM-1.0.3/OpenCTM-1.0.3-src.zip"
+  url "http://download.sourceforge.net/project/openctm/OpenCTM-1.0.3/OpenCTM-1.0.3-src.zip"
   sha256 "1310346651d96dc310022fde23a7d1a7810f32bccdfda4be0ea1b7a3cfd2b583"
   
   depends_on "cmake" => :build
