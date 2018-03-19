@@ -17,7 +17,7 @@ class Libimread < Formula
   depends_on "cmake"          =>  :build
   depends_on "llvm"           =>  :build
   depends_on "pkg-config"     =>  :build
-  depends_on :python          =>  :optional
+  depends_on "python@2"       =>  :optional
   depends_on "hdf5"
   depends_on "libjpeg"
   depends_on "libpng"
