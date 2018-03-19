@@ -15,7 +15,7 @@ class Pyston < Formula
   depends_on "ninja"     => :build
   depends_on "llvm"      => :build
   depends_on "git"       => :build
-  depends_on :python
+  depends_on "python@2"
   depends_on "mpfr"
   depends_on "sqlite"
   
