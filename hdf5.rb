@@ -19,7 +19,7 @@ class Hdf5 < Formula
   depends_on "automake" => :build
   depends_on "libtool" => :build
   depends_on "szip"
-  depends_on :fortran
+  depends_on "gfortran"
   depends_on :mpi => [:optional, :cc, :cxx, :f90]
 
   def install

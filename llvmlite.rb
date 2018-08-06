@@ -16,7 +16,7 @@ class Llvmlite < Formula
   
   depends_on "cmake" => :build
   depends_on "llvm" => :build
-  depends_on :python
+  depends_on "python"
   
   def install
     # Use brewed clang

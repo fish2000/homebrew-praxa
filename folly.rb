@@ -49,7 +49,7 @@ class Folly < Formula
   depends_on "boost"
   
   conflicts_with "double-conversion",
-     :because => <<-EOS.undent
+     :because => <<-EOS
       The homebrew master-branch formula for double-conversion
       is apparently waaaay to normal and well-adjusted in the eyes
       of the beautiful and unique millenial snowflake that facebook

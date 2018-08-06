@@ -4,7 +4,7 @@ class Numba < Formula
   url "https://github.com/numba/numba.git", :using => :git
   version "0.1.0"
 
-  depends_on :python
+  depends_on "python"
   depends_on "numpy" => :python
   depends_on "argparse" => :python
   depends_on "funcsigs" => :python
