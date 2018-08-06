@@ -20,7 +20,7 @@ class Hdf5 < Formula
   depends_on "libtool" => :build
   depends_on "szip"
   depends_on "gfortran"
-  depends_on :mpi => [:optional, :cc, :cxx, :f90]
+  depends_on "mpi" => [:optional, :cc, :cxx, :f90]
 
   def install
     ENV.cxx11 if build.cxx11?
